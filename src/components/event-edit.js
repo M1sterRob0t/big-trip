@@ -10,16 +10,16 @@ const createTripEventEditTemplate = (point) => {
   const preposition = transferTypes.includes(type) ? Preposition.to : Preposition.in;
 
   const dateStart = {
-    year: dateFrom.getFullYear(),
-    month: dateFrom.getMonth() < 10 ? `0` + dateFrom.getMonth() : dateFrom.getMonth(),
+    year: String(dateFrom.getFullYear()).slice(-2),
+    month: dateFrom.getMonth() < 10 ? `0` + (dateFrom.getMonth() + 1) : (dateFrom.getMonth() + 1),
     date: dateFrom.getDate() < 10 ? `0` + dateFrom.getDate() : dateFrom.getDate(),
     hours: dateFrom.getHours() < 10 ? `0` + dateFrom.getHours() : dateFrom.getHours(),
     minutes: dateFrom.getMinutes() < 10 ? `0` + dateFrom.getMinutes() : dateFrom.getMinutes(),
   };
 
   const dateEnd = {
-    year: dateTo.getFullYear(),
-    month: dateTo.getMonth() < 10 ? `0` + dateTo.getMonth() : dateTo.getMonth(),
+    year: String(dateTo.getFullYear()).slice(-2),
+    month: dateTo.getMonth() + 1 < 10 ? `0` + (dateTo.getMonth() + 1) : (dateTo.getMonth() + 1),
     date: dateTo.getDate() < 10 ? `0` + dateTo.getDate() : dateTo.getDate(),
     hours: dateTo.getHours() < 10 ? `0` + dateTo.getHours() : dateTo.getHours(),
     minutes: dateTo.getMinutes() < 10 ? `0` + dateTo.getMinutes() : dateTo.getMinutes(),
@@ -27,8 +27,8 @@ const createTripEventEditTemplate = (point) => {
 
   const timeStart = `${dateStart.hours}:${dateStart.minutes}`;
   const timeEnd = `${dateEnd.hours}:${dateEnd.minutes}`;
-  const dateStartFormatted = `${dateStart.year}-${dateStart.month}-${dateStart.date}T${timeStart}`;
-  const dateEndFormatted = `${dateEnd.year}-${dateEnd.month}-${dateEnd.date}T${timeEnd}`;
+  const dateStartFormatted = `${dateStart.date}/${dateStart.month}/${dateStart.year}`;
+  const dateEndFormatted = `${dateEnd.date}/${dateEnd.month}/${dateEnd.year}`;
 
   return (`
     <form class="trip-events__item  event  event--edit" action="#" method="post">
