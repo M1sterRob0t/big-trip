@@ -1,34 +1,34 @@
 const transferTypes = [`taxi`, `bus`, `train`, `ship`, `transport`, `drive`, `flight`];
 const activityTypes = [`check-in`, `sightseeing`, `restaurant`];
-const Preposition = {to: `to`, in: `in`};
+const Preposition = {TO: `to`, IN: `in`};
 const types = [`taxi`, `bus`, `train`, `ship`, `transport`, `drive`, `flight`, `check-in`, `sightseeing`, `restaurant`];
 const cities = [`Amsterdam`, `Geneva`, `Chamonix`, `Saint Petersburg`, `Vienna`, `Nurnberg`, `Budapest`, `Bratislava`, `Paris`];
 const Month = {
-  January: `Jan`,
-  February: `Feb`,
-  March: `Mar`,
-  April: `April`,
-  May: `May`,
-  June: `Jun`,
-  July: `Jul`,
-  August: `Aug`,
-  September: `Sep`,
-  October: `Oct`,
-  December: `Dec`,
+  JANUARY: `Jan`,
+  FEBRUARY: `Feb`,
+  MARCH: `Mar`,
+  APRIL: `April`,
+  MAY: `May`,
+  JUNE: `Jun`,
+  JULY: `Jul`,
+  AUGUST: `Aug`,
+  SEPTEMBER: `Sep`,
+  OCTOBER: `Oct`,
+  DECEMBER: `Dec`,
 };
 
 const monthes = [
-  Month.January,
-  Month.February,
-  Month.March,
-  Month.April,
-  Month.May,
-  Month.June,
-  Month.July,
-  Month.August,
-  Month.September,
-  Month.October,
-  Month.December
+  Month.JANUARY,
+  Month.FEBRUARY,
+  Month.MARCH,
+  Month.APRIL,
+  Month.MAY,
+  Month.JUNE,
+  Month.JULY,
+  Month.AUGUST,
+  Month.SEPTEMBER,
+  Month.OCTOBER,
+  Month.DECEMBER
 ];
 
 export {transferTypes, activityTypes, Preposition, types, cities, monthes};

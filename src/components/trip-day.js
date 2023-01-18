@@ -1,4 +1,5 @@
 import {monthes} from "../constants/constants";
+import {createElement} from "../utils";
 
 const createTripDayTemplate = (date, counter) => {
 
@@ -20,4 +21,25 @@ const createTripDayTemplate = (date, counter) => {
   `);
 };
 
-export {createTripDayTemplate};
+export default class Day {
+  constructor(date, counter) {
+    this._date = date;
+    this._counter = counter;
+  }
+
+  getTemplate() {
+    return createTripDayTemplate(this._date, this._counter);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

@@ -1,5 +1,5 @@
 import {transferTypes, activityTypes, Preposition} from "../constants/constants";
-import {capitalizeFirstletter} from "../utils/common";
+import {capitalizeFirstletter, createElement} from "../utils";
 import {cities} from "../constants/constants";
 import {offersByType} from "../mock/offers";
 
@@ -7,7 +7,7 @@ const createTripEventEditTemplate = (point) => {
   const {type, destination, offers: chosenOffers, price, dateFrom, dateTo} = point;
   const {name: city, description, pictures} = destination;
 
-  const preposition = transferTypes.includes(type) ? Preposition.to : Preposition.in;
+  const preposition = transferTypes.includes(type) ? Preposition.TO : Preposition.IN;
 
   const dateStart = {
     year: String(dateFrom.getFullYear()).slice(-2),
@@ -148,4 +148,25 @@ const createEventPhotoMarkup = (src, alt) => {
   `);
 };
 
-export {createTripEventEditTemplate};
+export default class EventEdit {
+  constructor(point) {
+    this._point = point;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createTripEventEditTemplate(this._point);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
