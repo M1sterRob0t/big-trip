@@ -1,10 +1,10 @@
 import {transferTypes, Preposition} from "../constants/constants";
-import {capitalizeFirstletter} from "../utils/common";
+import {capitalizeFirstletter, createElement} from "../utils";
 
 const createTripEventTemplate = (point) => {
   const {type, destination, offers, price, dateFrom, dateTo} = point;
   const {name: city} = destination;
-  const preposition = transferTypes.includes(type) ? Preposition.to : Preposition.in;
+  const preposition = transferTypes.includes(type) ? Preposition.TO : Preposition.IN;
 
   const dateStart = {
     year: dateFrom.getFullYear(),
@@ -100,4 +100,25 @@ const createOffersMarkup = (title, price) => {
   `);
 };
 
-export {createTripEventTemplate};
+export default class Event {
+  constructor(point) {
+    this._point = point;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createTripEventTemplate(this._point);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

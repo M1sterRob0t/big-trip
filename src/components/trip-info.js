@@ -1,4 +1,5 @@
 import {monthes} from "../constants/constants";
+import {createElement} from "../utils";
 
 
 const createTripInfoTemplate = (points) => {
@@ -48,4 +49,24 @@ const createTitleMarkup = (route) => {
   `);
 };
 
-export {createTripInfoTemplate};
+export default class TripInfo {
+  constructor(points) {
+    this._points = points;
+  }
+
+  getTemplate() {
+    return createTripInfoTemplate(this._points);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
