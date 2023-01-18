@@ -6,6 +6,7 @@ import Days from "./components/trip-days";
 import Day from "./components/trip-day";
 import EventEdit from "./components/event-edit";
 import Event from "./components/event";
+import NoEvents from "./components/no-events";
 import {generatePoints} from "./mock/points";
 import {render, RenderPosition} from "./utils";
 
@@ -47,27 +48,51 @@ const renderEvent = (eventsList, event) => {
   const eventComponent = new Event(event);
   const eventEditComponent = new EventEdit(event);
 
-  const eventRollupButtonClickHandler = () => {
+
+  const replaceEventToEdit = () => {
     eventsList.replaceChild(eventEditComponent.getElement(), eventComponent.getElement());
+
   };
 
-  const eventEditRollupButtonClickHandler = () => {
+  const replaceEditToEvent = () => {
     eventsList.replaceChild(eventComponent.getElement(), eventEditComponent.getElement());
+  };
+
+  const documentEscPressHandler = (evt) => {
+    if (evt.key === `Esc` || evt.key === `Escape`) {
+      replaceEditToEvent();
+      document.removeEventListener(`keydown`, documentEscPressHandler);
+    }
   };
 
   const eventRollupButton = eventComponent.getElement().querySelector(`.event__rollup-btn`);
   const eventEditForm = eventEditComponent.getElement();
 
-  eventRollupButton.addEventListener(`click`, eventRollupButtonClickHandler);
-  eventEditForm.addEventListener(`submit`, eventEditRollupButtonClickHandler);
+  eventRollupButton.addEventListener(`click`, (evt) => {
+    evt.preventDefault();
+    replaceEventToEdit();
+    document.addEventListener(`keydown`, documentEscPressHandler);
+  });
+
+  eventEditForm.addEventListener(`submit`, (evt) => {
+    evt.preventDefault();
+    replaceEditToEvent();
+    document.removeEventListener(`keydown`, documentEscPressHandler);
+  });
+
 
   render(eventsList, eventComponent.getElement()); // рендер в этот день
 };
 
 const renderTrip = (container, events) => {
+  if (events.length === 0) {
+    const noEventsComponent = new NoEvents();
+    render(container, noEventsComponent.getElement(), RenderPosition.BEFOREEND);
+    return;
+  }
+
   const sortComponent = new Sort();
   const daysComponent = new Days(points);
-
   render(container, sortComponent.getElement(), RenderPosition.BEFOREEND);
   render(container, daysComponent.getElement(), RenderPosition.BEFOREEND);
 
