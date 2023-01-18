@@ -11,7 +11,7 @@ import {generatePoints} from "./mock/points";
 import {render, RenderPosition} from "./utils";
 
 const EVENTS_NUMBER = 15;
-const points = []; // generatePoints(EVENTS_NUMBER);
+const points = generatePoints(EVENTS_NUMBER);
 
 const renderDays = (container, events) => {
   if (events.length === 0) {
@@ -48,18 +48,19 @@ const renderEvent = (eventsList, event) => {
   const eventComponent = new Event(event);
   const eventEditComponent = new EventEdit(event);
 
-  const eventRollupButtonClickHandler = () => {
+
+  const replaceEventToEdit = () => {
     eventsList.replaceChild(eventEditComponent.getElement(), eventComponent.getElement());
-    document.addEventListener(`keydown`, documentEscPressHandler);
+
   };
 
-  const fromSubmitHandler = () => {
+  const replaceEditToEvent = () => {
     eventsList.replaceChild(eventComponent.getElement(), eventEditComponent.getElement());
   };
 
   const documentEscPressHandler = (evt) => {
     if (evt.key === `Esc` || evt.key === `Escape`) {
-      eventsList.replaceChild(eventComponent.getElement(), eventEditComponent.getElement());
+      replaceEditToEvent();
       document.removeEventListener(`keydown`, documentEscPressHandler);
     }
   };
@@ -67,8 +68,17 @@ const renderEvent = (eventsList, event) => {
   const eventRollupButton = eventComponent.getElement().querySelector(`.event__rollup-btn`);
   const eventEditForm = eventEditComponent.getElement();
 
-  eventRollupButton.addEventListener(`click`, eventRollupButtonClickHandler);
-  eventEditForm.addEventListener(`submit`, fromSubmitHandler);
+  eventRollupButton.addEventListener(`click`, (evt) => {
+    evt.preventDefault();
+    replaceEventToEdit();
+    document.addEventListener(`keydown`, documentEscPressHandler);
+  });
+
+  eventEditForm.addEventListener(`submit`, (evt) => {
+    evt.preventDefault();
+    replaceEditToEvent();
+    document.removeEventListener(`keydown`, documentEscPressHandler);
+  });
 
 
   render(eventsList, eventComponent.getElement()); // рендер в этот день
