@@ -1,14 +1,14 @@
 import {transferTypes, activityTypes, Preposition} from "../constants/constants";
 import {capitalizeFirstletter} from "../utils/common";
-import {cities} from "../constants/constants";
-import {offersByType} from "../mock/offers";
 import AbstractComponent from "./abstract-component";
 
-const createTripEventEditTemplate = (point) => {
+const createTripEventEditTemplate = (point, offers, destinations) => {
   const {type, destination, offers: chosenOffers, price, dateFrom, dateTo} = point;
   const {name: city, description, pictures} = destination;
 
-  const preposition = transferTypes.includes(type) ? Preposition.TO : Preposition.IN;
+  const allOffers = offers.find((el) => el.type === type).offers;
+  const cities = destinations.map((el) => el.name);
+  const preposition = activityTypes.includes(type) ? Preposition.IN : Preposition.TO;
 
   const dateStart = {
     year: String(dateFrom.getFullYear()).slice(-2),
@@ -92,7 +92,7 @@ const createTripEventEditTemplate = (point) => {
           <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
           <div class="event__available-offers">
-            ${offersByType.find((el) => el.type === type).offers.map((el) => createOfferMarkup(el.title, el.price, chosenOffers)).join(``)}
+            ${allOffers.map((el) => createOfferMarkup(el.title, el.price, chosenOffers)).join(``)}
           </div>
         </section>
 
@@ -150,13 +150,16 @@ const createEventPhotoMarkup = (src, alt) => {
 };
 
 export default class EventEdit extends AbstractComponent {
-  constructor(point) {
+  constructor(point, offers, destinations) {
     super();
+
     this._point = point;
+    this._offers = offers;
+    this._destinations = destinations;
   }
 
   getTemplate() {
-    return createTripEventEditTemplate(this._point);
+    return createTripEventEditTemplate(this._point, this._offers, this._destinations);
   }
 
   setFormSubmitHandler(cb) {
