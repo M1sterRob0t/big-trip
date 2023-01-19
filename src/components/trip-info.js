@@ -1,5 +1,5 @@
 import {monthes} from "../constants/constants";
-import {createElement} from "../utils";
+import AbstractComponent from "./abstract-component";
 
 
 const createTripInfoTemplate = (points) => {
@@ -50,24 +50,13 @@ const createTitleMarkup = (route) => {
   `);
 };
 
-export default class TripInfo {
+export default class TripInfo extends AbstractComponent {
   constructor(points) {
+    super();
     this._points = points;
   }
 
   getTemplate() {
     return createTripInfoTemplate(this._points);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

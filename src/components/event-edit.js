@@ -1,7 +1,8 @@
 import {transferTypes, activityTypes, Preposition} from "../constants/constants";
-import {capitalizeFirstletter, createElement} from "../utils";
+import {capitalizeFirstletter} from "../utils";
 import {cities} from "../constants/constants";
 import {offersByType} from "../mock/offers";
+import AbstractComponent from "./abstract-component";
 
 const createTripEventEditTemplate = (point) => {
   const {type, destination, offers: chosenOffers, price, dateFrom, dateTo} = point;
@@ -148,25 +149,13 @@ const createEventPhotoMarkup = (src, alt) => {
   `);
 };
 
-export default class EventEdit {
+export default class EventEdit extends AbstractComponent {
   constructor(point) {
+    super();
     this._point = point;
-    this._element = null;
   }
 
   getTemplate() {
     return createTripEventEditTemplate(this._point);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

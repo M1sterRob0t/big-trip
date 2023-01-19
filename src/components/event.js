@@ -1,5 +1,6 @@
 import {transferTypes, Preposition} from "../constants/constants";
-import {capitalizeFirstletter, createElement} from "../utils";
+import {capitalizeFirstletter} from "../utils";
+import AbstractComponent from "./abstract-component";
 
 const createTripEventTemplate = (point) => {
   const {type, destination, offers, price, dateFrom, dateTo} = point;
@@ -100,25 +101,13 @@ const createOffersMarkup = (title, price) => {
   `);
 };
 
-export default class Event {
+export default class Event extends AbstractComponent {
   constructor(point) {
+    super();
     this._point = point;
-    this._element = null;
   }
 
   getTemplate() {
     return createTripEventTemplate(this._point);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }
