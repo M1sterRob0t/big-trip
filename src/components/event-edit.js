@@ -1,5 +1,5 @@
 import {transferTypes, activityTypes, Preposition} from "../constants/constants";
-import {capitalizeFirstletter} from "../utils";
+import {capitalizeFirstletter} from "../utils/common";
 import {cities} from "../constants/constants";
 import {offersByType} from "../mock/offers";
 import AbstractComponent from "./abstract-component";
@@ -157,5 +157,9 @@ export default class EventEdit extends AbstractComponent {
 
   getTemplate() {
     return createTripEventEditTemplate(this._point);
+  }
+
+  setFormSubmitHandler(cb) {
+    this.getElement().addEventListener(`submit`, cb);
   }
 }

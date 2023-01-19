@@ -1,5 +1,5 @@
 import {transferTypes, Preposition} from "../constants/constants";
-import {capitalizeFirstletter} from "../utils";
+import {capitalizeFirstletter} from "../utils/common";
 import AbstractComponent from "./abstract-component";
 
 const createTripEventTemplate = (point) => {
@@ -109,5 +109,9 @@ export default class Event extends AbstractComponent {
 
   getTemplate() {
     return createTripEventTemplate(this._point);
+  }
+
+  setRollupButtonClickHandler(cb) {
+    this.getElement().addEventListener(`click`, cb);
   }
 }

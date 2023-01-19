@@ -8,7 +8,7 @@ import EventEdit from "./components/event-edit";
 import Event from "./components/event";
 import NoEvents from "./components/no-events";
 import {generatePoints} from "./mock/points";
-import {render, RenderPosition} from "./utils";
+import {render, RenderPosition, replace} from "./utils/render";
 
 const EVENTS_NUMBER = 15;
 const points = generatePoints(EVENTS_NUMBER);
@@ -24,7 +24,7 @@ const renderDays = (container, events) => {
 
   for (let i = 1; i <= days; i++) {
     const dayComponent = new Day(date, i);
-    render(container, dayComponent.getElement());
+    render(container, dayComponent);
     date = new Date(+date + day);
   }
 };
@@ -50,12 +50,11 @@ const renderEvent = (eventsList, event) => {
 
 
   const replaceEventToEdit = () => {
-    eventsList.replaceChild(eventEditComponent.getElement(), eventComponent.getElement());
-
+    replace(eventEditComponent, eventComponent);
   };
 
   const replaceEditToEvent = () => {
-    eventsList.replaceChild(eventComponent.getElement(), eventEditComponent.getElement());
+    replace(eventComponent, eventEditComponent);
   };
 
   const documentEscPressHandler = (evt) => {
@@ -65,36 +64,32 @@ const renderEvent = (eventsList, event) => {
     }
   };
 
-  const eventRollupButton = eventComponent.getElement().querySelector(`.event__rollup-btn`);
-  const eventEditForm = eventEditComponent.getElement();
-
-  eventRollupButton.addEventListener(`click`, (evt) => {
+  eventComponent.setRollupButtonClickHandler((evt) => {
     evt.preventDefault();
     replaceEventToEdit();
     document.addEventListener(`keydown`, documentEscPressHandler);
   });
 
-  eventEditForm.addEventListener(`submit`, (evt) => {
+  eventEditComponent.setFormSubmitHandler((evt) => {
     evt.preventDefault();
     replaceEditToEvent();
     document.removeEventListener(`keydown`, documentEscPressHandler);
   });
 
-
-  render(eventsList, eventComponent.getElement()); // рендер в этот день
+  render(eventsList, eventComponent); // рендер в этот день
 };
 
 const renderTrip = (container, events) => {
   if (events.length === 0) {
     const noEventsComponent = new NoEvents();
-    render(container, noEventsComponent.getElement(), RenderPosition.BEFOREEND);
+    render(container, noEventsComponent);
     return;
   }
 
   const sortComponent = new Sort();
   const daysComponent = new Days(points);
-  render(container, sortComponent.getElement(), RenderPosition.BEFOREEND);
-  render(container, daysComponent.getElement(), RenderPosition.BEFOREEND);
+  render(container, sortComponent);
+  render(container, daysComponent);
 
   const tripDays = tripEvents.querySelector(`.trip-days`);
   renderDays(tripDays, events);
@@ -109,8 +104,8 @@ const tripMain = document.querySelector(`.trip-main`);
 const tripControlsHeaders = tripMain.querySelectorAll(`.trip-main__trip-controls h2`);
 const tripEvents = document.querySelector(`.trip-events`);
 
-render(tripMain, tripInfoComponent.getElement(points), RenderPosition.AFTERBEGIN);
-render(tripControlsHeaders[0], tabsComponent.getElement(), RenderPosition.AFTEREND);
-render(tripControlsHeaders[1], filtersComponent.getElement(), RenderPosition.AFTEREND);
+render(tripMain, tripInfoComponent, RenderPosition.AFTERBEGIN);
+render(tripControlsHeaders[0], tabsComponent, RenderPosition.AFTEREND);
+render(tripControlsHeaders[1], filtersComponent, RenderPosition.AFTEREND);
 
 renderTrip(tripEvents, points);
