@@ -1,5 +1,5 @@
 import {transferTypes, Preposition} from "../constants/constants";
-import {capitalizeFirstletter} from "../utils/common";
+import {capitalizeFirstLetter} from "../utils/common";
 import AbstractComponent from "./abstract-component";
 
 const createTripEventTemplate = (point) => {
@@ -62,7 +62,7 @@ const createTripEventTemplate = (point) => {
         <div class="event__type">
           <img class="event__type-icon" width="42" height="42" src="img/icons/${type}.png" alt="Event type icon">
         </div>
-        <h3 class="event__title">${capitalizeFirstletter(type)} ${preposition} ${city}</h3>
+        <h3 class="event__title">${capitalizeFirstLetter(type)} ${preposition} ${city}</h3>
 
         <div class="event__schedule">
           <p class="event__time">
@@ -112,6 +112,6 @@ export default class Event extends AbstractComponent {
   }
 
   setRollupButtonClickHandler(cb) {
-    this.getElement().addEventListener(`click`, cb);
+    this.getElement().querySelector(`.event__rollup-btn`)  .addEventListener(`click`, cb);
   }
 }

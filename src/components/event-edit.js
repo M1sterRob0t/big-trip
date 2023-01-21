@@ -1,5 +1,5 @@
 import {transferTypes, activityTypes, Preposition} from "../constants/constants";
-import {capitalizeFirstletter} from "../utils/common";
+import {capitalizeFirstLetter} from "../utils/common";
 import AbstractComponent from "./abstract-component";
 
 const createTripEventEditTemplate = (point, offers, destinations) => {
@@ -56,7 +56,7 @@ const createTripEventEditTemplate = (point, offers, destinations) => {
 
         <div class="event__field-group  event__field-group--destination">
           <label class="event__label  event__type-output" for="event-destination-1">
-            ${capitalizeFirstletter(type)} ${preposition}
+            ${capitalizeFirstLetter(type)} ${preposition}
           </label>
           <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${city}" list="destination-list-1">
           <datalist id="destination-list-1">
@@ -115,7 +115,7 @@ const createEventTypeMarkup = (type) => {
   return (`
     <div class="event__type-item">
       <input id="event-type-${type}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type}">
-      <label class="event__type-label  event__type-label--${type}" for="event-type-${type}-1">${capitalizeFirstletter(type)}</label>
+      <label class="event__type-label  event__type-label--${type}" for="event-type-${type}-1">${capitalizeFirstLetter(type)}</label>
     </div>
   `);
 };

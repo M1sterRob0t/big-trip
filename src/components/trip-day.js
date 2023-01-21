@@ -3,6 +3,15 @@ import AbstractComponent from "./abstract-component";
 
 const createTripDayTemplate = (date, counter) => {
 
+  if (!date || !counter) {
+    return (`
+      <li class="trip-days__item  day">
+        <div class="day__info"></div>
+        <ul class="trip-events__list"></ul>
+      </li>
+    `);
+  }
+
   const formattedDate = {
     year: date.getFullYear(),
     month: date.getMonth() + 1 < 10 ? `0` + (date.getMonth() + 1) : (date.getMonth() + 1),

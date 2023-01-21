@@ -31,4 +31,10 @@ const monthes = [
   Month.DECEMBER
 ];
 
-export {transferTypes, activityTypes, Preposition, types, cities, monthes};
+const SortType = {
+  EVENT: `event`,
+  TIME: `time`,
+  PRICE: `price`,
+};
+
+export {transferTypes, activityTypes, Preposition, types, cities, monthes, SortType};

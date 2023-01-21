@@ -5,13 +5,19 @@ import Day from "../components/trip-day";
 import EventEdit from "../components/event-edit";
 import Event from "../components/event";
 import NoEvents from "../components/no-events";
+import {SortType} from "../constants/constants";
 
-const renderDays = (container, events) => {
-  if (events.length === 0) {
+const renderDays = (container, events, isSorted = false) => {
+  if (isSorted) {
+    const dayComponent = new Day();
+    render(container, dayComponent);
     return;
   }
 
-  const days = Math.ceil((events.at(-1).dateFrom / 1000 / 60 / 60 / 24 - (events.at(0).dateFrom / 1000 / 60 / 60 / 24 - 1)));
+  const dateFirst = new Date(events.at(0).dateFrom.getFullYear(), events.at(0).dateFrom.getMonth(), events.at(0).dateFrom.getDate());
+  const dateLast = new Date(events.at(-1).dateFrom.getFullYear(), events.at(-1).dateFrom.getMonth(), events.at(-1).dateFrom.getDate());
+
+  const days = (dateLast - dateFirst) / 1000 / 60 / 60 / 24 + 1;
   let date = events.at(0).dateFrom;
   const day = 1000 * 60 * 60 * 24;
 
@@ -71,6 +77,29 @@ const renderEvent = (eventsList, event, offers, destinations) => {
   render(eventsList, eventComponent); // рендер в этот день
 };
 
+const renderEvents = (container, events, offers, destinations) => {
+  for (let i = 0; i < events.length; i++) {
+    renderEvent(container, events[i], offers, destinations);
+  }
+};
+
+const sortPoints = (sortType, array) => {
+  let sortedPoints = array.slice();
+
+  switch (sortType) {
+    case SortType.EVENT:
+      break;
+    case SortType.PRICE:
+      sortedPoints.sort((a, b) => a.price - b.price);
+      break;
+    case SortType.TIME:
+      sortedPoints.sort((a, b) => (a.dateTo - a.dateFrom) - (b.dateTo - b.dateFrom));
+      break;
+  }
+
+  return sortedPoints;
+};
+
 export default class TripController {
   constructor(container) {
     this._coltainer = container;
@@ -95,12 +124,26 @@ export default class TripController {
     const sortComponent = new Sort();
     const daysComponent = new Days(points);
 
+    sortComponent.setSortTypeChangeHandler(() => {
+      const sortedPoints = sortPoints(sortComponent.sortType, this._points);
+      daysComponent.getElement().innerHTML = ``;
+
+      if (sortComponent.sortType === SortType.EVENT) {
+        renderDays(tripDaysElement, points);
+        const eventsLists = daysComponent.getEventsLists();
+        renderPointsByDay(eventsLists, points, offers, destinations);
+      } else {
+        renderDays(tripDaysElement, points, true);
+        const eventsLists = daysComponent.getEventsLists();
+        renderEvents(eventsLists[0], sortedPoints, offers, destinations);
+      }
+    });
+
     render(container, sortComponent);
     render(container, daysComponent);
-
     const tripDaysElement = daysComponent.getElement();
-    renderDays(tripDaysElement, points);
 
+    renderDays(tripDaysElement, points);
     const eventsLists = daysComponent.getEventsLists();
     renderPointsByDay(eventsLists, points, offers, destinations);
   }
