@@ -1,9 +1,9 @@
 import {transferTypes, activityTypes, Preposition} from "../constants/constants";
 import {capitalizeFirstLetter} from "../utils/common";
-import AbstractComponent from "./abstract-component";
+import AbstractSmartComponent from "./abstract-smart-component";
 
 const createTripEventEditTemplate = (point, offers, destinations) => {
-  const {type, destination, offers: chosenOffers, price, dateFrom, dateTo} = point;
+  const {type, destination, offers: chosenOffers, price, dateFrom, dateTo, isFavorite} = point;
   const {name: city, description, pictures} = destination;
 
   const allOffers = offers.find((el) => el.type === type).offers;
@@ -86,6 +86,18 @@ const createTripEventEditTemplate = (point, offers, destinations) => {
 
         <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
         <button class="event__reset-btn" type="reset">Cancel</button>
+
+        <input id="event-favorite-1" class="event__favorite-checkbox  visually-hidden"
+          type="checkbox" name="event-favorite" ${isFavorite ? `checked` : ``}>
+        <label class="event__favorite-btn" for="event-favorite-1">
+          <span class="visually-hidden">Add to favorite</span>
+          <svg class="event__favorite-icon" width="28" height="28" viewBox="0 0 28 28">
+            <path d="M14 21l-8.22899 4.3262 1.57159-9.1631L.685209 9.67376 9.8855 8.33688 14 0l4.1145 8.33688 9.2003 1.33688-6.6574 6.48934 1.5716 9.1631L14 21z"/>
+          </svg>
+        </label>
+        <button class="event__rollup-btn" type="button">
+          <span class="visually-hidden">Open event</span>
+        </button>
       </header>
       <section class="event__details">
         <section class="event__section  event__section--offers">
@@ -149,13 +161,18 @@ const createEventPhotoMarkup = (src, alt) => {
   `);
 };
 
-export default class EventEdit extends AbstractComponent {
+export default class EventEdit extends AbstractSmartComponent {
   constructor(point, offers, destinations) {
     super();
 
     this._point = point;
     this._offers = offers;
     this._destinations = destinations;
+
+    this._formSubmitHandler = null;
+    this._favoriteCheckboxChangeHandler = null;
+
+    this.setFormSubmitHandler = this.setFormSubmitHandler.bind(this);
   }
 
   getTemplate() {
@@ -163,6 +180,25 @@ export default class EventEdit extends AbstractComponent {
   }
 
   setFormSubmitHandler(cb) {
+    this._formSubmitHandler = cb;
     this.getElement().addEventListener(`submit`, cb);
+  }
+
+  setFavoriteCheckboxChangeHandler(cb) {
+    this._favoriteCheckboxChangeHandler = cb;
+    this.getElement().querySelector(`.event__favorite-checkbox`).addEventListener(`change`, cb);
+  }
+
+  recoveryListeners() {
+    this.setFormSubmitHandler(this._formSubmitHandler);
+    this.setFavoriteCheckboxChangeHandler(this._favoriteCheckboxChangeHandler);
+  }
+
+  rerender() {
+    super.rerender();
+  }
+
+  updaitPoint(point) {
+    this._point = point;
   }
 }

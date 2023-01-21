@@ -3,9 +3,11 @@ import Event from "../components/event";
 import {render, replace} from "../utils/render";
 
 export default class PointController {
-  constructor(container) {
+  constructor(container, dataChangeHandler) {
     this._container = container;
+    this._dataChangeHandler = dataChangeHandler;
 
+    this._point = null;
     this._eventComponent = null;
     this._eventEditComponent = null;
 
@@ -13,6 +15,16 @@ export default class PointController {
   }
 
   render(point, offers, destinations) {
+    this._point = point;
+
+    const oldEventComponent = this._eventComponent;
+    const oldEventFormComponent = this._eventEditComponent;
+
+    if (oldEventComponent && oldEventFormComponent) {
+      this._eventEditComponent.updaitPoint(point);
+      return;
+    }
+
     this._eventComponent = new Event(point);
     this._eventEditComponent = new EventEdit(point, offers, destinations);
 
@@ -28,11 +40,18 @@ export default class PointController {
       document.removeEventListener(`keydown`, this._onEscKeyDown);
     });
 
+    this._eventEditComponent.setFavoriteCheckboxChangeHandler(() => {
+      const newPoint = Object.assign({}, this._point, {isFavorite: !this._point.isFavorite});
+      this._dataChangeHandler(this._point, newPoint);
+      this._eventEditComponent.rerender();
+    });
+
     render(this._container, this._eventComponent);
   }
 
   _replaceEventToEdit() {
     replace(this._eventEditComponent, this._eventComponent);
+
   }
 
   _replaceEditToEvent() {
