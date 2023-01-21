@@ -1,13 +1,14 @@
 import {transferTypes, activityTypes, Preposition} from "../constants/constants";
-import {capitalizeFirstletter, createElement} from "../utils";
-import {cities} from "../constants/constants";
-import {offersByType} from "../mock/offers";
+import {capitalizeFirstLetter} from "../utils/common";
+import AbstractComponent from "./abstract-component";
 
-const createTripEventEditTemplate = (point) => {
+const createTripEventEditTemplate = (point, offers, destinations) => {
   const {type, destination, offers: chosenOffers, price, dateFrom, dateTo} = point;
   const {name: city, description, pictures} = destination;
 
-  const preposition = transferTypes.includes(type) ? Preposition.TO : Preposition.IN;
+  const allOffers = offers.find((el) => el.type === type).offers;
+  const cities = destinations.map((el) => el.name);
+  const preposition = activityTypes.includes(type) ? Preposition.IN : Preposition.TO;
 
   const dateStart = {
     year: String(dateFrom.getFullYear()).slice(-2),
@@ -55,7 +56,7 @@ const createTripEventEditTemplate = (point) => {
 
         <div class="event__field-group  event__field-group--destination">
           <label class="event__label  event__type-output" for="event-destination-1">
-            ${capitalizeFirstletter(type)} ${preposition}
+            ${capitalizeFirstLetter(type)} ${preposition}
           </label>
           <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${city}" list="destination-list-1">
           <datalist id="destination-list-1">
@@ -91,7 +92,7 @@ const createTripEventEditTemplate = (point) => {
           <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
           <div class="event__available-offers">
-            ${offersByType.find((el) => el.type === type).offers.map((el) => createOfferMarkup(el.title, el.price, chosenOffers)).join(``)}
+            ${allOffers.map((el) => createOfferMarkup(el.title, el.price, chosenOffers)).join(``)}
           </div>
         </section>
 
@@ -114,7 +115,7 @@ const createEventTypeMarkup = (type) => {
   return (`
     <div class="event__type-item">
       <input id="event-type-${type}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type}">
-      <label class="event__type-label  event__type-label--${type}" for="event-type-${type}-1">${capitalizeFirstletter(type)}</label>
+      <label class="event__type-label  event__type-label--${type}" for="event-type-${type}-1">${capitalizeFirstLetter(type)}</label>
     </div>
   `);
 };
@@ -148,25 +149,20 @@ const createEventPhotoMarkup = (src, alt) => {
   `);
 };
 
-export default class EventEdit {
-  constructor(point) {
+export default class EventEdit extends AbstractComponent {
+  constructor(point, offers, destinations) {
+    super();
+
     this._point = point;
-    this._element = null;
+    this._offers = offers;
+    this._destinations = destinations;
   }
 
   getTemplate() {
-    return createTripEventEditTemplate(this._point);
+    return createTripEventEditTemplate(this._point, this._offers, this._destinations);
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
+  setFormSubmitHandler(cb) {
+    this.getElement().addEventListener(`submit`, cb);
   }
 }

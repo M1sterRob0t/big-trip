@@ -1,7 +1,16 @@
 import {monthes} from "../constants/constants";
-import {createElement} from "../utils";
+import AbstractComponent from "./abstract-component";
 
 const createTripDayTemplate = (date, counter) => {
+
+  if (!date || !counter) {
+    return (`
+      <li class="trip-days__item  day">
+        <div class="day__info"></div>
+        <ul class="trip-events__list"></ul>
+      </li>
+    `);
+  }
 
   const formattedDate = {
     year: date.getFullYear(),
@@ -21,25 +30,14 @@ const createTripDayTemplate = (date, counter) => {
   `);
 };
 
-export default class Day {
+export default class Day extends AbstractComponent {
   constructor(date, counter) {
+    super();
     this._date = date;
     this._counter = counter;
   }
 
   getTemplate() {
     return createTripDayTemplate(this._date, this._counter);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }
