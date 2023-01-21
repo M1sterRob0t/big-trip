@@ -27,7 +27,7 @@ const createSortItemMarkup = (type) => {
 export default class Sort extends AbstractComponent {
   constructor() {
     super();
-    this._currentSortType = SortType.EVENT;
+    this.currentSortType = SortType.EVENT;
   }
 
   getTemplate() {
@@ -48,9 +48,9 @@ export default class Sort extends AbstractComponent {
         return;
       }
 
-      this._currentSortType = sortType;
+      this.currentSortType = sortType;
 
-      cb(this._currentSorttype);
+      cb(this.currentSortType);
     });
   }
 }
