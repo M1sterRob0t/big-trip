@@ -1,11 +1,10 @@
-import {render, replace} from "../utils/render";
+import {render} from "../utils/render";
 import Sort from "../components/sort";
 import Days from "../components/trip-days";
 import Day from "../components/trip-day";
-import EventEdit from "../components/event-edit";
-import Event from "../components/event";
 import NoEvents from "../components/no-events";
 import {SortType} from "../constants/constants";
+import PointController from "./pointController";
 
 const renderDays = (container, events, isSorted = false) => {
   if (isSorted) {
@@ -25,61 +24,6 @@ const renderDays = (container, events, isSorted = false) => {
     const dayComponent = new Day(date, i);
     render(container, dayComponent);
     date = new Date(+date + day);
-  }
-};
-
-const renderPointsByDay = (eventsLists, events, offers, destinations) => {
-  const day = 1000 * 60 * 60 * 24;
-  let date = events.at(0).dateFrom;
-
-  for (let i = 0; i < eventsLists.length; i++) { // проходимся по всем дням
-    for (let j = 0; j < events.length; j++) { // проходимся по всем событиям
-      if (date.getDate() === events[j].dateFrom.getDate() && date.getMonth() === events[j].dateFrom.getMonth()) { // если дата одинаковая
-        renderEvent(eventsLists[i], events[j], offers, destinations); // рендер в этот день
-      }
-    }
-    date = new Date(+date + day);
-  }
-};
-
-const renderEvent = (eventsList, event, offers, destinations) => {
-  const eventComponent = new Event(event);
-  const eventEditComponent = new EventEdit(event, offers, destinations);
-
-
-  const replaceEventToEdit = () => {
-    replace(eventEditComponent, eventComponent);
-  };
-
-  const replaceEditToEvent = () => {
-    replace(eventComponent, eventEditComponent);
-  };
-
-  const documentEscPressHandler = (evt) => {
-    if (evt.key === `Esc` || evt.key === `Escape`) {
-      replaceEditToEvent();
-      document.removeEventListener(`keydown`, documentEscPressHandler);
-    }
-  };
-
-  eventComponent.setRollupButtonClickHandler((evt) => {
-    evt.preventDefault();
-    replaceEventToEdit();
-    document.addEventListener(`keydown`, documentEscPressHandler);
-  });
-
-  eventEditComponent.setFormSubmitHandler((evt) => {
-    evt.preventDefault();
-    replaceEditToEvent();
-    document.removeEventListener(`keydown`, documentEscPressHandler);
-  });
-
-  render(eventsList, eventComponent); // рендер в этот день
-};
-
-const renderEvents = (container, events, offers, destinations) => {
-  for (let i = 0; i < events.length; i++) {
-    renderEvent(container, events[i], offers, destinations);
   }
 };
 
@@ -107,6 +51,14 @@ export default class TripController {
     this._points = null;
     this._offers = null;
     this._destinations = null;
+
+    this._sortComponent = null;
+    this._daysComponent = null;
+
+    this._pointControllers = [];
+    this._sortTypeChangeHandler = this._sortTypeChangeHandler.bind(this);
+    this._dataChangeHandler = this._dataChangeHandler.bind(this);
+    this._viewChangeHandler = this._viewChangeHandler.bind(this);
   }
 
   render(points, offers, destinations) {
@@ -121,30 +73,73 @@ export default class TripController {
       return;
     }
 
-    const sortComponent = new Sort();
-    const daysComponent = new Days(points);
+    this._sortComponent = new Sort();
+    this._daysComponent = new Days(points);
 
-    sortComponent.setSortTypeChangeHandler(() => {
-      const sortedPoints = sortPoints(sortComponent.sortType, this._points);
-      daysComponent.getElement().innerHTML = ``;
+    this._sortComponent.setSortTypeChangeHandler(this._sortTypeChangeHandler);
 
-      if (sortComponent.sortType === SortType.EVENT) {
-        renderDays(tripDaysElement, points);
-        const eventsLists = daysComponent.getEventsLists();
-        renderPointsByDay(eventsLists, points, offers, destinations);
-      } else {
-        renderDays(tripDaysElement, points, true);
-        const eventsLists = daysComponent.getEventsLists();
-        renderEvents(eventsLists[0], sortedPoints, offers, destinations);
-      }
-    });
-
-    render(container, sortComponent);
-    render(container, daysComponent);
-    const tripDaysElement = daysComponent.getElement();
+    render(container, this._sortComponent);
+    render(container, this._daysComponent);
+    const tripDaysElement = this._daysComponent.getElement();
 
     renderDays(tripDaysElement, points);
-    const eventsLists = daysComponent.getEventsLists();
-    renderPointsByDay(eventsLists, points, offers, destinations);
+    const eventsLists = this._daysComponent.getEventsLists();
+    this._renderEventsByDays(eventsLists, points, offers, destinations);
+  }
+
+  _sortTypeChangeHandler(sortType) {
+    const sortedPoints = sortPoints(sortType, this._points);
+    this._daysComponent.getElement().innerHTML = ``;
+    this._pointControllers = [];
+    const tripDaysElement = this._daysComponent.getElement();
+
+    if (sortType === SortType.EVENT) {
+      renderDays(tripDaysElement, this._points);
+      const eventsLists = this._daysComponent.getEventsLists();
+      this._renderEventsByDays(eventsLists, this._points, this._offers, this._destinations);
+    } else {
+      renderDays(tripDaysElement, this._points, true);
+      const eventsLists = this._daysComponent.getEventsLists();
+      this._renderEventsWithoutDays(eventsLists[0], sortedPoints, this._offers, this._destinations);
+    }
+  }
+
+  _dataChangeHandler(oldData, newData) {
+    const index = this._points.findIndex((el) => el === oldData);
+
+    if (index === -1) {
+      return;
+    }
+
+    this._points = [].concat(this._points.slice(0, index), newData, this._points.slice(index + 1));
+    this._pointControllers[index].render(this._points[index], this._offers, this._destinations);
+  }
+
+  _viewChangeHandler() {
+    this._pointControllers.forEach((el) => el.setDefaultView());
+  }
+
+  _renderEventsByDays(eventsLists, points, offers, destinations) {
+    const day = 1000 * 60 * 60 * 24;
+    let date = points.at(0).dateFrom;
+
+    for (let i = 0; i < eventsLists.length; i++) { // проходимся по всем дням
+      for (let j = 0; j < points.length; j++) { // проходимся по всем событиям
+        if (date.getDate() === points[j].dateFrom.getDate() && date.getMonth() === points[j].dateFrom.getMonth()) { // если дата одинаковая
+          const pointController = new PointController(eventsLists[i], this._dataChangeHandler, this._viewChangeHandler);
+          pointController.render(points[j], offers, destinations); // рендер в этот день
+          this._pointControllers.push(pointController);
+        }
+      }
+      date = new Date(+date + day);
+    }
+  }
+
+  _renderEventsWithoutDays(eventsList, points, offers, destinations) {
+    for (let i = 0; i < points.length; i++) {
+      const pointController = new PointController(eventsList, this._dataChangeHandler, this._viewChangeHandler);
+      this._pointControllers.push(pointController);
+      pointController.render(points[i], offers, destinations);
+    }
   }
 }

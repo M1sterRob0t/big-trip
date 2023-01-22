@@ -2,7 +2,7 @@ const transferTypes = [`taxi`, `bus`, `train`, `ship`, `transport`, `drive`, `fl
 const activityTypes = [`check-in`, `sightseeing`, `restaurant`];
 const Preposition = {TO: `to`, IN: `in`};
 const types = [`taxi`, `bus`, `train`, `ship`, `transport`, `drive`, `flight`, `check-in`, `sightseeing`, `restaurant`];
-const cities = [`Amsterdam`, `Geneva`, `Chamonix`, `Saint Petersburg`, `Vienna`, `Nurnberg`, `Budapest`, `Bratislava`, `Paris`];
+const cities = [`Moscow`, `Berlin`, `Amsterdam`, `Geneva`, `Chamonix`, `Saint Petersburg`, `Vienna`, `Nurnberg`, `Budapest`, `Bratislava`, `Paris`];
 const Month = {
   JANUARY: `Jan`,
   FEBRUARY: `Feb`,
