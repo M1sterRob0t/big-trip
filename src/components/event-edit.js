@@ -1,6 +1,8 @@
 import {transferTypes, activityTypes, Preposition} from "../constants/constants";
 import {capitalizeFirstLetter} from "../utils/common";
 import AbstractSmartComponent from "./abstract-smart-component";
+import flatpickr from "flatpickr";
+import "flatpickr/dist/flatpickr.min.css";
 
 const createTripEventEditTemplate = (point, offers, destinations) => {
   const {type, destination, offers: chosenOffers, price, dateFrom, dateTo, isFavorite} = point;
@@ -172,6 +174,13 @@ export default class EventEdit extends AbstractSmartComponent {
     this._formSubmitHandler = null;
     this._favoriteCheckboxChangeHandler = null;
     this._typeChangeHandler = null;
+    this._setDestinationChangeHandler = null;
+
+    this._flatpickrStart = null;
+    this._flatpickrEnd = null;
+
+    this.setDateStartInputFocusHandler();
+    this.setDateEndInputFocusHandler();
   }
 
   getTemplate() {
@@ -198,11 +207,28 @@ export default class EventEdit extends AbstractSmartComponent {
     this.getElement().querySelector(`.event__input--destination`).addEventListener(`change`, cb);
   }
 
+  setDateStartInputFocusHandler() {
+    const dateStartElement = this.getElement().querySelector(`#event-start-time-1`);
+    dateStartElement.addEventListener(`focus`, () => {
+      this._applyFlatpickr(dateStartElement, {maxDate: this._point.dateTo});
+    });
+  }
+
+  setDateEndInputFocusHandler() {
+    const dateEndElement = this.getElement().querySelector(`#event-end-time-1`);
+    dateEndElement.addEventListener(`focus`, () => {
+      this._applyFlatpickr(dateEndElement, {defaultDate: this._point.dateTo, minDate: this._point.dateFrom});
+    });
+  }
+
   recoveryListeners() {
     this.setFormSubmitHandler(this._formSubmitHandler);
     this.setFavoriteCheckboxChangeHandler(this._favoriteCheckboxChangeHandler);
     this.setTypeChangeHandler(this._typeChangeHandler);
     this.setDestinationChangeHandler(this._destinationChangeHandler);
+
+    this.setDateStartInputFocusHandler();
+    this.setDateEndInputFocusHandler();
   }
 
   rerender() {
@@ -215,5 +241,20 @@ export default class EventEdit extends AbstractSmartComponent {
 
   reset() {
     this.rerender();
+  }
+
+  _applyFlatpickr(dateElement, settings) {
+    if (this._flatpickr) {
+      this._flatpickr.destroy();
+      this._flatpickr = null;
+    }
+
+    const flatpickrSetting = {
+      allowInput: true,
+      enableTime: true,
+      dateFormat: `y/m/d H:i`,
+    };
+
+    this._flatpickr = flatpickr(dateElement, Object.assign({}, flatpickrSetting, settings));
   }
 }

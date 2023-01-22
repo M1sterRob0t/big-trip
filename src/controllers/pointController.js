@@ -80,7 +80,7 @@ export default class PointController {
 
   _replaceEditToEvent() {
     this._isEditMode = false;
-    this._eventEditComponent.reset();
+    // this._eventEditComponent.reset();
     replace(this._eventComponent, this._eventEditComponent);
     document.removeEventListener(`keydown`, this._onEscKeyDown);
   }

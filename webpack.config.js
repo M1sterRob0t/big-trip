@@ -10,5 +10,13 @@ module.exports = {
   devtool: `source-map`,
   devServer: {
     hot: true,
+  },
+  module: {
+    rules: [
+      {
+        test: /\.css$/i,
+        use: ['style-loader', 'css-loader']
+      }
+    ]
   }
 };
