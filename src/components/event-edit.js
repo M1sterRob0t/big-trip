@@ -171,8 +171,7 @@ export default class EventEdit extends AbstractSmartComponent {
 
     this._formSubmitHandler = null;
     this._favoriteCheckboxChangeHandler = null;
-
-    this.setFormSubmitHandler = this.setFormSubmitHandler.bind(this);
+    this._typeChangeHandler = null;
   }
 
   getTemplate() {
@@ -189,9 +188,21 @@ export default class EventEdit extends AbstractSmartComponent {
     this.getElement().querySelector(`.event__favorite-checkbox`).addEventListener(`change`, cb);
   }
 
+  setTypeChangeHandler(cb) {
+    this._typeChangeHandler = cb;
+    this.getElement().querySelectorAll(`.event__type-input`).forEach((el) => el.addEventListener(`change`, cb));
+  }
+
+  setDestinationChangeHandler(cb) {
+    this._destinationChangeHandler = cb;
+    this.getElement().querySelector(`.event__input--destination`).addEventListener(`change`, cb);
+  }
+
   recoveryListeners() {
     this.setFormSubmitHandler(this._formSubmitHandler);
     this.setFavoriteCheckboxChangeHandler(this._favoriteCheckboxChangeHandler);
+    this.setTypeChangeHandler(this._typeChangeHandler);
+    this.setDestinationChangeHandler(this._destinationChangeHandler);
   }
 
   rerender() {
@@ -200,5 +211,9 @@ export default class EventEdit extends AbstractSmartComponent {
 
   updaitPoint(point) {
     this._point = point;
+  }
+
+  reset() {
+    this.rerender();
   }
 }

@@ -56,8 +56,9 @@ export default class TripController {
     this._daysComponent = null;
 
     this._pointControllers = [];
-    this.sortTypeChangeHandler = this.sortTypeChangeHandler.bind(this);
-    this.dataChangeHandler = this.dataChangeHandler.bind(this);
+    this._sortTypeChangeHandler = this._sortTypeChangeHandler.bind(this);
+    this._dataChangeHandler = this._dataChangeHandler.bind(this);
+    this._viewChangeHandler = this._viewChangeHandler.bind(this);
   }
 
   render(points, offers, destinations) {
@@ -75,7 +76,7 @@ export default class TripController {
     this._sortComponent = new Sort();
     this._daysComponent = new Days(points);
 
-    this._sortComponent.setSortTypeChangeHandler(this.sortTypeChangeHandler);
+    this._sortComponent.setSortTypeChangeHandler(this._sortTypeChangeHandler);
 
     render(container, this._sortComponent);
     render(container, this._daysComponent);
@@ -86,7 +87,7 @@ export default class TripController {
     this._renderEventsByDays(eventsLists, points, offers, destinations);
   }
 
-  sortTypeChangeHandler(sortType) {
+  _sortTypeChangeHandler(sortType) {
     const sortedPoints = sortPoints(sortType, this._points);
     this._daysComponent.getElement().innerHTML = ``;
     this._pointControllers = [];
@@ -103,15 +104,19 @@ export default class TripController {
     }
   }
 
-  dataChangeHandler(oldData, newData) {
+  _dataChangeHandler(oldData, newData) {
     const index = this._points.findIndex((el) => el === oldData);
 
     if (index === -1) {
       return;
     }
-
+    console.log(newData);
     this._points = [].concat(this._points.slice(0, index), newData, this._points.slice(index + 1));
     this._pointControllers[index].render(this._points[index], this._offers, this._destinations);
+  }
+
+  _viewChangeHandler() {
+    this._pointControllers.forEach((el) => el.setDefaultView());
   }
 
   _renderEventsByDays(eventsLists, points, offers, destinations) {
@@ -121,7 +126,7 @@ export default class TripController {
     for (let i = 0; i < eventsLists.length; i++) { // проходимся по всем дням
       for (let j = 0; j < points.length; j++) { // проходимся по всем событиям
         if (date.getDate() === points[j].dateFrom.getDate() && date.getMonth() === points[j].dateFrom.getMonth()) { // если дата одинаковая
-          const pointController = new PointController(eventsLists[i], this.dataChangeHandler);
+          const pointController = new PointController(eventsLists[i], this._dataChangeHandler, this._viewChangeHandler);
           pointController.render(points[j], offers, destinations); // рендер в этот день
           this._pointControllers.push(pointController);
         }
@@ -132,7 +137,7 @@ export default class TripController {
 
   _renderEventsWithoutDays(eventsList, points, offers, destinations) {
     for (let i = 0; i < points.length; i++) {
-      const pointController = new PointController(eventsList, this.dataChangeHandler);
+      const pointController = new PointController(eventsList, this._dataChangeHandler, this._viewChangeHandler);
       this._pointControllers.push(pointController);
       pointController.render(points[i], offers, destinations);
     }

@@ -9,6 +9,7 @@ import {offersByType} from "./mock/offers";
 
 const EVENTS_NUMBER = 15;
 const points = generatePoints(EVENTS_NUMBER);
+console.log(points);
 
 const tripInfoComponent = new TripInfo(points);
 const tabsComponent = new Tabs();

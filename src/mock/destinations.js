@@ -14,9 +14,11 @@ const descriptions = [
   `In rutrum ac purus sit amet tempus.`,
 ];
 
+const names = cities.slice();
+
 const generateDestination = () => {
   const description = _.shuffle(descriptions).slice(0, _.random(1, 4));
-  const name = _.sample(cities);
+  const name = names.pop();
   const pictures = new Array(_.random(1, 5)).fill(``).map(() => {
     return {
       src: `http://picsum.photos/248/152?r=${Math.random()};`,
@@ -31,5 +33,4 @@ const generateDestination = () => {
   };
 };
 const destinations = cities.map(() => generateDestination());
-
 export {destinations};
