@@ -3,6 +3,9 @@ import {capitalizeFirstLetter} from "../utils/common";
 import AbstractSmartComponent from "./abstract-smart-component";
 import flatpickr from "flatpickr";
 import "flatpickr/dist/flatpickr.min.css";
+import moment from "moment";
+
+const DATE_FORMAT = `YY/MM/DD HH:mm`;
 
 const createTripEventEditTemplate = (point, offers, destinations) => {
   const {type, destination, offers: chosenOffers, price, dateFrom, dateTo, isFavorite} = point;
@@ -12,26 +15,8 @@ const createTripEventEditTemplate = (point, offers, destinations) => {
   const cities = destinations.map((el) => el.name);
   const preposition = activityTypes.includes(type) ? Preposition.IN : Preposition.TO;
 
-  const dateStart = {
-    year: String(dateFrom.getFullYear()).slice(-2),
-    month: dateFrom.getMonth() < 10 ? `0` + (dateFrom.getMonth() + 1) : (dateFrom.getMonth() + 1),
-    date: dateFrom.getDate() < 10 ? `0` + dateFrom.getDate() : dateFrom.getDate(),
-    hours: dateFrom.getHours() < 10 ? `0` + dateFrom.getHours() : dateFrom.getHours(),
-    minutes: dateFrom.getMinutes() < 10 ? `0` + dateFrom.getMinutes() : dateFrom.getMinutes(),
-  };
-
-  const dateEnd = {
-    year: String(dateTo.getFullYear()).slice(-2),
-    month: dateTo.getMonth() + 1 < 10 ? `0` + (dateTo.getMonth() + 1) : (dateTo.getMonth() + 1),
-    date: dateTo.getDate() < 10 ? `0` + dateTo.getDate() : dateTo.getDate(),
-    hours: dateTo.getHours() < 10 ? `0` + dateTo.getHours() : dateTo.getHours(),
-    minutes: dateTo.getMinutes() < 10 ? `0` + dateTo.getMinutes() : dateTo.getMinutes(),
-  };
-
-  const timeStart = `${dateStart.hours}:${dateStart.minutes}`;
-  const timeEnd = `${dateEnd.hours}:${dateEnd.minutes}`;
-  const dateStartFormatted = `${dateStart.date}/${dateStart.month}/${dateStart.year}`;
-  const dateEndFormatted = `${dateEnd.date}/${dateEnd.month}/${dateEnd.year}`;
+  const dateStartFormatted = moment(dateFrom).format(DATE_FORMAT);
+  const dateEndFormatted = moment(dateTo).format(DATE_FORMAT);
 
   return (`
     <form class="trip-events__item  event  event--edit" action="#" method="post">
@@ -70,12 +55,12 @@ const createTripEventEditTemplate = (point, offers, destinations) => {
           <label class="visually-hidden" for="event-start-time-1">
             From
           </label>
-          <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${dateStartFormatted} ${timeStart}">
+          <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${dateStartFormatted}">
           &mdash;
           <label class="visually-hidden" for="event-end-time-1">
             To
           </label>
-          <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${dateEndFormatted} ${timeEnd}">
+          <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${dateEndFormatted}">
         </div>
 
         <div class="event__field-group  event__field-group--price">
