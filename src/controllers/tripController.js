@@ -110,7 +110,7 @@ export default class TripController {
     if (index === -1) {
       return;
     }
-    console.log(newData);
+
     this._points = [].concat(this._points.slice(0, index), newData, this._points.slice(index + 1));
     this._pointControllers[index].render(this._points[index], this._offers, this._destinations);
   }
