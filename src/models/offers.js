@@ -1,4 +1,4 @@
-export default class Points {
+export default class Offers {
   constructor() {
     this._data = [];
     this._dataChangeHandlers = [];

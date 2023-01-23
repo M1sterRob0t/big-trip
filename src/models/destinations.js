@@ -1,4 +1,4 @@
-export default class Points {
+export default class Destinations {
   constructor() {
     this._data = [];
     this._dataChangeHandlers = [];
