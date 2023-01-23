@@ -45,8 +45,9 @@ const sortPoints = (sortType, array) => {
 };
 
 export default class TripController {
-  constructor(container) {
+  constructor(container, pointsModel) {
     this._coltainer = container;
+    this._pointsModel = pointsModel;
 
     this._points = null;
     this._offers = null;
@@ -61,10 +62,12 @@ export default class TripController {
     this._viewChangeHandler = this._viewChangeHandler.bind(this);
   }
 
-  render(points, offers, destinations) {
-    this._points = points;
+  render(offers, destinations) {
+    this._points = this._pointsModel.points;
     this._offers = offers;
     this._destinations = destinations;
+
+    const points = this._points;
     const container = this._coltainer;
 
     if (points.length === 0) {
