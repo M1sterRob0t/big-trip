@@ -12,6 +12,8 @@ export default class PointController {
     this._eventComponent = null;
     this._eventEditComponent = null;
 
+    this._oldPoint = null;
+
     this._onEscKeyDown = this._onEscKeyDown.bind(this);
     this._isEditMode = false;
   }
@@ -75,12 +77,13 @@ export default class PointController {
   _replaceEventToEdit() {
     this._viewChangeHandler();
     this._isEditMode = true;
+    this._saveDataBeforeChanges();
     replace(this._eventEditComponent, this._eventComponent);
   }
 
   _replaceEditToEvent() {
     this._isEditMode = false;
-    // this._eventEditComponent.reset();
+    this._resetChanges();
     replace(this._eventComponent, this._eventEditComponent);
     document.removeEventListener(`keydown`, this._onEscKeyDown);
   }
@@ -90,6 +93,15 @@ export default class PointController {
       this._replaceEditToEvent();
       document.removeEventListener(`keydown`, this._onEscPressHandler);
     }
+  }
+
+  _saveDataBeforeChanges() {
+    this._oldPoint = this._point;
+  }
+
+  _resetChanges() {
+    this._dataChangeHandler(this._point, this._oldPoint);
+    this._eventEditComponent.rerender();
   }
 }
 
