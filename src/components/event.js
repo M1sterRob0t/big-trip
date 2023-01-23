@@ -1,39 +1,15 @@
 import {transferTypes, Preposition} from "../constants/constants";
 import {capitalizeFirstLetter} from "../utils/common";
 import AbstractComponent from "./abstract-component";
+import moment from "moment";
 
-const createTripEventTemplate = (point) => {
-  const {type, destination, offers, price, dateFrom, dateTo} = point;
-  const {name: city} = destination;
-  const preposition = transferTypes.includes(type) ? Preposition.TO : Preposition.IN;
+const TIME_FORMAT = `HH:mm`;
+const DATETIME_FORMAT = `YYYY-MM-DDTHH:mm`;
 
-  const dateStart = {
-    year: dateFrom.getFullYear(),
-    month: dateFrom.getMonth() < 10 ? `0` + dateFrom.getMonth() : dateFrom.getMonth(),
-    date: dateFrom.getDate() < 10 ? `0` + dateFrom.getDate() : dateFrom.getDate(),
-    hours: dateFrom.getHours() < 10 ? `0` + dateFrom.getHours() : dateFrom.getHours(),
-    minutes: dateFrom.getMinutes() < 10 ? `0` + dateFrom.getMinutes() : dateFrom.getMinutes(),
-  };
+const getFormattedDuration = (durationInMinutes, durationInHours, durationInDays) => {
+  let duration = ``;
 
-  const dateEnd = {
-    year: dateTo.getFullYear(),
-    month: dateTo.getMonth() < 10 ? `0` + dateTo.getMonth() : dateTo.getMonth(),
-    date: dateTo.getDate() < 10 ? `0` + dateTo.getDate() : dateTo.getDate(),
-    hours: dateTo.getHours() < 10 ? `0` + dateTo.getHours() : dateTo.getHours(),
-    minutes: dateTo.getMinutes() < 10 ? `0` + dateTo.getMinutes() : dateTo.getMinutes(),
-  };
-
-  const timeStart = `${dateStart.hours}:${dateStart.minutes}`;
-  const timeEnd = `${dateEnd.hours}:${dateEnd.minutes}`;
-  const datetimeStart = `${dateStart.year}-${dateStart.month}-${dateStart.date}T${timeStart}`;
-  const datetimeEnd = `${dateEnd.year}-${dateEnd.month}-${dateEnd.date}T${timeEnd}`;
-
-  const durationInMinutes = Math.round((dateTo - dateFrom) / 1000 / 60);
-  const durationInHours = Math.floor((dateTo - dateFrom) / 1000 / 60 / 60);
-  const durationInDays = Math.floor((dateTo - dateFrom) / 1000 / 60 / 60 / 24);
-
-  let duration = null;
-  if (durationInDays >= 1) {
+  if (durationInDays > 0) {
     let hours = durationInHours - durationInDays * 24;
     let minutes = durationInMinutes - durationInHours * 60;
 
@@ -42,7 +18,7 @@ const createTripEventTemplate = (point) => {
       ${hours < 10 ? `0` + hours : hours}H
       ${minutes < 10 ? `0` + minutes : minutes}M
     `;
-  } else if (durationInHours >= 1) {
+  } else if (durationInHours > 0) {
     let minutes = durationInMinutes - durationInHours * 60;
 
     duration = `
@@ -55,6 +31,23 @@ const createTripEventTemplate = (point) => {
     `;
   }
 
+  return duration;
+};
+
+const createTripEventTemplate = (point) => {
+  const {type, destination, offers, price, dateFrom, dateTo} = point;
+  const {name: city} = destination;
+  const preposition = transferTypes.includes(type) ? Preposition.TO : Preposition.IN;
+
+  const timeStart = moment(dateFrom).format(TIME_FORMAT);
+  const timeEnd = moment(dateTo).format(TIME_FORMAT);
+  const datetimeStart = moment(dateFrom).format(DATETIME_FORMAT);
+  const datetimeEnd = moment(dateTo).format(DATETIME_FORMAT);
+
+  const durationInMinutes = Math.floor(moment.duration(dateTo - dateFrom).asMinutes());
+  const durationInHours = Math.floor(moment.duration(dateTo - dateFrom).asHours());
+  const durationInDays = Math.floor(moment.duration(dateTo - dateFrom).asDays());
+  const duration = getFormattedDuration(durationInMinutes, durationInHours, durationInDays);
 
   return (`
     <li class="trip-events__item">
