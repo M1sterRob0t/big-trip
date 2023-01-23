@@ -9,7 +9,7 @@ const createTripDaysTemplate = () => {
 
 export default class Days extends AbstractComponent {
   getTemplate() {
-    return createTripDaysTemplate(this._date, this._counter);
+    return createTripDaysTemplate();
   }
 
   getEventsLists() {

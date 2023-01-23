@@ -1,6 +1,6 @@
 import EventEdit from "../components/event-edit";
 import Event from "../components/event";
-import {render, replace} from "../utils/render";
+import {render, replace, remove} from "../utils/render";
 
 export default class PointController {
   constructor(container, dataChangeHandler, viewChangeHandler) {
@@ -66,6 +66,12 @@ export default class PointController {
     });
 
     render(this._container, this._eventComponent);
+  }
+
+  destroy() {
+    remove(this._eventEditComponent);
+    remove(this._eventComponent);
+    document.removeEventListener(`keydown`, this._onEscKeyDown);
   }
 
   setDefaultView() {

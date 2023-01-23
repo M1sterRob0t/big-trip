@@ -1,6 +1,5 @@
 import TripInfo from "./components/trip-info";
 import Tabs from "./components/trip-tabs";
-import Filters from "./components/filters";
 import {generatePoints} from "./mock/points";
 import {render, RenderPosition} from "./utils/render";
 import TripController from "./controllers/tripController";
@@ -9,8 +8,9 @@ import {offersByType} from "./mock/offers";
 import Points from "./models/points";
 import Offers from "./models/offers";
 import Destinations from "./models/destinations";
+import FiltersController from "./controllers/filtersController";
 
-const EVENTS_NUMBER = 15;
+const EVENTS_NUMBER = 10;
 const pointsModel = new Points();
 const offersModel = new Offers();
 const destinationsModel = new Destinations();
@@ -21,7 +21,6 @@ destinationsModel.data = destinations;
 
 const tripInfoComponent = new TripInfo(pointsModel.data);
 const tabsComponent = new Tabs();
-const filtersComponent = new Filters();
 
 const tripMain = document.querySelector(`.trip-main`);
 const tripControlsHeaders = tripMain.querySelectorAll(`.trip-main__trip-controls h2`);
@@ -30,6 +29,7 @@ const tripController = new TripController(tripEvents, pointsModel, offersModel, 
 
 render(tripMain, tripInfoComponent, RenderPosition.AFTERBEGIN);
 render(tripControlsHeaders[0], tabsComponent, RenderPosition.AFTEREND);
-render(tripControlsHeaders[1], filtersComponent, RenderPosition.AFTEREND);
+const filtersController = new FiltersController(tripControlsHeaders[1], pointsModel);
+filtersController.render();
 
 tripController.render();

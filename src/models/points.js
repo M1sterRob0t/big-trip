@@ -1,16 +1,44 @@
+import {Filter} from "../constants/constants";
+
+const getFilteredPoints = (points, filterType) => {
+  let filteredPoints;
+  switch (filterType) {
+    case Filter.EVERYTHING:
+      filteredPoints = points.slice();
+      break;
+    case Filter.FUTURE:
+      filteredPoints = points.filter((el) => el.dateFrom > new Date());
+      break;
+    case Filter.PAST:
+      filteredPoints = points.filter((el) => el.dateFrom < new Date());
+      break;
+  }
+
+  return filteredPoints;
+};
+
 export default class Points {
   constructor() {
     this._data = [];
+
+    this._filterChangeHandlers = [];
     this._dataChangeHandlers = [];
+
+    this._activeFilter = Filter.EVERYTHING;
   }
 
   get data() {
-    return this._data;
+    return getFilteredPoints(this._data, this._activeFilter);
   }
 
   set data(data) {
     this._data = data;
     this._callHandlers(this._dataChangeHandlers);
+  }
+
+  set activeFilter(filter) {
+    this._activeFilter = filter;
+    this._callHandlers(this._filterChangeHandlers);
   }
 
   udpdateData(id, newData) {
@@ -25,6 +53,10 @@ export default class Points {
 
   setDataChangeHandler(handler) {
     this._dataChangeHandlers.push(handler);
+  }
+
+  setFilterChangeHandler(handler) {
+    this._filterChangeHandlers.push(handler);
   }
 
   _callHandlers(handlers) {

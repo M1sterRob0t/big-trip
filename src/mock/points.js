@@ -4,7 +4,7 @@ import {offersByType} from "./offers";
 import {types} from "../constants/constants";
 
 
-let date = new Date();
+let date = new Date() - 1000 * 60 * 60 * 24 * 3;
 const generatePoint = (id) => {
   const price = _.random(5, 150);
   const type = _.sample(types);

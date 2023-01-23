@@ -1,4 +1,4 @@
-import {render} from "../utils/render";
+import {render, remove} from "../utils/render";
 import Sort from "../components/sort";
 import Days from "../components/trip-days";
 import Day from "../components/trip-day";
@@ -55,13 +55,16 @@ export default class TripController {
     this._offers = null;
     this._destinations = null;
 
-    this._sortComponent = null;
-    this._daysComponent = null;
+    this._sortComponent = new Sort();
+    this._daysComponent = new Days();
 
     this._pointControllers = [];
     this._sortTypeChangeHandler = this._sortTypeChangeHandler.bind(this);
     this._dataChangeHandler = this._dataChangeHandler.bind(this);
     this._viewChangeHandler = this._viewChangeHandler.bind(this);
+    this._filterChangeHandler = this._filterChangeHandler.bind(this);
+
+    this._pointsModel.setFilterChangeHandler(this._filterChangeHandler);
   }
 
   render() {
@@ -80,9 +83,6 @@ export default class TripController {
       return;
     }
 
-    this._sortComponent = new Sort();
-    this._daysComponent = new Days(points);
-
     this._sortComponent.setSortTypeChangeHandler(this._sortTypeChangeHandler);
 
     render(container, this._sortComponent);
@@ -96,8 +96,7 @@ export default class TripController {
 
   _sortTypeChangeHandler(sortType) {
     const sortedPoints = sortPoints(sortType, this._points);
-    this._daysComponent.getElement().innerHTML = ``;
-    this._pointControllers = [];
+    this._removeEvents();
     const tripDaysElement = this._daysComponent.getElement();
 
     if (sortType === SortType.EVENT) {
@@ -124,6 +123,18 @@ export default class TripController {
 
   _viewChangeHandler() {
     this._pointControllers.forEach((el) => el.setDefaultView());
+  }
+
+  _filterChangeHandler() {
+    this._removeEvents();
+    remove(this._sortComponent);
+    this.render();
+  }
+
+  _removeEvents() {
+    this._pointControllers.forEach((el) => el.destroy());
+    this._pointControllers = [];
+    this._daysComponent.getElement().innerHTML = ``;
   }
 
   _renderEventsByDays(eventsLists, points, offers, destinations) {
