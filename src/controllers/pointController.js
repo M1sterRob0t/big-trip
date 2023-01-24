@@ -2,6 +2,14 @@ import EventEdit from "../components/event-edit";
 import Event from "../components/event";
 import {render, replace, remove} from "../utils/render";
 
+export const Mode = {
+  DEFAULT: `default`,
+  EDITING: `editing`,
+  CREATING: `creating`,
+};
+
+export const EmptyPoint = {};
+
 export default class PointController {
   constructor(container, dataChangeHandler, viewChangeHandler) {
     this._container = container;
@@ -63,6 +71,10 @@ export default class PointController {
           });
       this._dataChangeHandler(this._point, newPoint);
       this._eventEditComponent.rerender();
+    });
+
+    this._eventEditComponent.setDeleteButtonClickHandler(() => {
+      this._dataChangeHandler(this._point, null);
     });
 
     render(this._container, this._eventComponent);

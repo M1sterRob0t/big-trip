@@ -45,10 +45,31 @@ export default class Points {
     const index = this._data.findIndex((el) => el.id === id);
 
     if (index === -1) {
-      return;
+      return false;
     }
 
     this._data = [].concat(this._data.slice(0, index), newData, this._data.slice(index + 1));
+    this._callHandlers(this._dataChangeHandlers);
+
+    return index;
+  }
+
+  removeData(id) {
+    const index = this._data.findIndex((el) => el.id === id);
+
+    if (index === -1) {
+      return false;
+    }
+
+    this._data = [].concat(this._data.slice(0, index), this._data.slice(index + 1));
+    this._callHandlers(this._dataChangeHandlers);
+
+    return true;
+  }
+
+  addData(data) {
+    this._data = [].concat(data, this._data);
+    this._callHandlers(this._dataChangeHandlers);
   }
 
   setDataChangeHandler(handler) {

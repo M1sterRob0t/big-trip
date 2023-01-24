@@ -159,7 +159,8 @@ export default class EventEdit extends AbstractSmartComponent {
     this._formSubmitHandler = null;
     this._favoriteCheckboxChangeHandler = null;
     this._typeChangeHandler = null;
-    this._setDestinationChangeHandler = null;
+    this._destinationChangeHandler = null;
+    this._deleteButtonClickHandler = null;
 
     this._flatpickrStart = null;
     this._flatpickrEnd = null;
@@ -206,12 +207,17 @@ export default class EventEdit extends AbstractSmartComponent {
     });
   }
 
+  setDeleteButtonClickHandler(cb) {
+    this._deleteButtonClickHandler = cb;
+    this.getElement().querySelector(`.event__reset-btn`).addEventListener(`click`, cb)
+  }
+
   recoveryListeners() {
     this.setFormSubmitHandler(this._formSubmitHandler);
     this.setFavoriteCheckboxChangeHandler(this._favoriteCheckboxChangeHandler);
     this.setTypeChangeHandler(this._typeChangeHandler);
     this.setDestinationChangeHandler(this._destinationChangeHandler);
-
+    this.setDeleteButtonClickHandler(this._deleteButtonClickHandler);
     this.setDateStartInputFocusHandler();
     this.setDateEndInputFocusHandler();
   }
@@ -241,5 +247,15 @@ export default class EventEdit extends AbstractSmartComponent {
     };
 
     this._flatpickr = flatpickr(dateElement, Object.assign({}, flatpickrSetting, settings));
+  }
+
+  removeElement() {
+    if (this._flatpickrStart) {
+      this._flatpickrStart.destroy();
+    }
+    if (this._flatpickrEnd) {
+      this._flatpickrEnd.destroy();
+    }
+    super.removeElement();
   }
 }

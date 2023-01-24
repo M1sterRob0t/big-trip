@@ -5,6 +5,7 @@ import Day from "../components/trip-day";
 import NoEvents from "../components/no-events";
 import {SortType} from "../constants/constants";
 import PointController from "./pointController";
+import {Mode, EmptyPoint} from "./pointController";
 
 const renderDays = (container, events, isSorted = false) => {
   if (isSorted) {
@@ -55,6 +56,9 @@ export default class TripController {
     this._offers = null;
     this._destinations = null;
 
+    this._sortComponent = null;
+    this._daysComponent = null;
+
     this._sortComponent = new Sort();
     this._daysComponent = new Days();
 
@@ -65,6 +69,8 @@ export default class TripController {
     this._filterChangeHandler = this._filterChangeHandler.bind(this);
 
     this._pointsModel.setFilterChangeHandler(this._filterChangeHandler);
+    this._sortComponent.setSortTypeChangeHandler(this._sortTypeChangeHandler);
+
   }
 
   render() {
@@ -82,8 +88,6 @@ export default class TripController {
       render(container, noEventsComponent);
       return;
     }
-
-    this._sortComponent.setSortTypeChangeHandler(this._sortTypeChangeHandler);
 
     render(container, this._sortComponent);
     render(container, this._daysComponent);
@@ -111,14 +115,25 @@ export default class TripController {
   }
 
   _dataChangeHandler(oldData, newData) {
-    const index = this._points.findIndex((el) => el === oldData);
-
-    if (index === -1) {
-      return;
+    if (oldData === EmptyPoint) {
+      this._mode = Mode.CREATING;
+      if (newData === null) {
+        this._pointControllers[0].destroy();
+        this._removeEvents();
+        this.render();
+      } else {
+        this._pointsModel.addData(newData);
+        this._pointControllers[0].render(newData, this._offers, this._destinations);
+      }
+    } else if (newData === null) {
+      this._pointsModel.removeData(oldData.id);
+      this._updaitEvents();
+    } else {
+      const index = this._pointsModel.updateData(oldData.id, newData);
+      if (index) {
+        this._pointControllers[index].render(newData, this._offers, this._destinations);
+      }
     }
-    // console.log(newData);
-    this._points = [].concat(this._points.slice(0, index), newData, this._points.slice(index + 1));
-    this._pointControllers[index].render(this._points[index], this._offers, this._destinations);
   }
 
   _viewChangeHandler() {
@@ -127,7 +142,10 @@ export default class TripController {
 
   _filterChangeHandler() {
     this._removeEvents();
+
     remove(this._sortComponent);
+    this._sortComponent.setSortTypeChangeHandler(this._sortTypeChangeHandler);
+
     this.render();
   }
 
@@ -135,6 +153,11 @@ export default class TripController {
     this._pointControllers.forEach((el) => el.destroy());
     this._pointControllers = [];
     this._daysComponent.getElement().innerHTML = ``;
+  }
+
+  _updaitEvents() {
+    this._removeEvents();
+    this.render();
   }
 
   _renderEventsByDays(eventsLists, points, offers, destinations) {
