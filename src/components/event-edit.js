@@ -72,7 +72,7 @@ const createTripEventEditTemplate = (point, offers, destinations) => {
         </div>
 
         <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-        <button class="event__reset-btn" type="reset">Cancel</button>
+        <button class="event__reset-btn" type="reset">Delete</button>
 
         <input id="event-favorite-1" class="event__favorite-checkbox  visually-hidden"
           type="checkbox" name="event-favorite" ${isFavorite ? `checked` : ``}>

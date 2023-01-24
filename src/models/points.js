@@ -41,7 +41,7 @@ export default class Points {
     this._callHandlers(this._filterChangeHandlers);
   }
 
-  udpdateData(id, newData) {
+  updateData(id, newData) {
     const index = this._data.findIndex((el) => el.id === id);
 
     if (index === -1) {
