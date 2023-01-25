@@ -6,6 +6,13 @@ import "flatpickr/dist/flatpickr.min.css";
 import moment from "moment";
 
 const DATE_FORMAT = `YY/MM/DD HH:mm`;
+const parseFormData = (formData) => {
+  return {
+    price: Number(formData.get(`event-price`)),
+    dateFrom: new Date(moment(formData.get(`event-start-time`), DATE_FORMAT)),
+    dateTo: new Date(moment(formData.get(`event-end-time`), DATE_FORMAT)),
+  };
+};
 
 const createTripEventEditTemplate = (point, offers, destinations) => {
   const {type, destination, offers: chosenOffers, price, dateFrom, dateTo, isFavorite} = point;
@@ -68,7 +75,7 @@ const createTripEventEditTemplate = (point, offers, destinations) => {
             <span class="visually-hidden">Price</span>
             &euro;
           </label>
-          <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${price}">
+          <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value="${price}">
         </div>
 
         <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
@@ -131,8 +138,10 @@ const createOfferMarkup = (desc, price, chosenOffers) => {
 
   return (`
     <div class="event__offer-selector">
-      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${title}-1" type="checkbox" name="event-offer-${title}"
-      ${isChecked ? `checked` : ``}>
+      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${title}-1"
+        type="checkbox" name="event-offer-${title}" data-title="${desc.toLowerCase()}"
+        ${isChecked ? `checked` : ``}
+      >
       <label class="event__offer-label" for="event-offer-${title}-1">
         <span class="event__offer-title">${desc}</span>
         &plus;
@@ -161,9 +170,12 @@ export default class EventEdit extends AbstractSmartComponent {
     this._typeChangeHandler = null;
     this._destinationChangeHandler = null;
     this._deleteButtonClickHandler = null;
+    this._rollupButtonClickHandler = null;
+    this._priceInputChangeHandler = null;
+    this._dateStartInputChangeHandler = null;
+    this._offersCheckboxChangeHandler = null;
 
-    this._flatpickrStart = null;
-    this._flatpickrEnd = null;
+    this._flatpickr = null;
 
     this.setDateStartInputFocusHandler();
     this.setDateEndInputFocusHandler();
@@ -195,22 +207,30 @@ export default class EventEdit extends AbstractSmartComponent {
 
   setDateStartInputFocusHandler() {
     const dateStartElement = this.getElement().querySelector(`#event-start-time-1`);
+    const dateEndElement = this.getElement().querySelector(`#event-end-time-1`);
     dateStartElement.addEventListener(`focus`, () => {
-      this._applyFlatpickr(dateStartElement, {maxDate: this._point.dateTo});
+      this._applyFlatpickr(dateStartElement, {defaultDate: this._point.dateFrom, maxDate: dateEndElement.value});
     });
   }
 
   setDateEndInputFocusHandler() {
+    const dateStartElement = this.getElement().querySelector(`#event-start-time-1`);
     const dateEndElement = this.getElement().querySelector(`#event-end-time-1`);
     dateEndElement.addEventListener(`focus`, () => {
-      this._applyFlatpickr(dateEndElement, {defaultDate: this._point.dateTo, minDate: this._point.dateFrom});
+      this._applyFlatpickr(dateEndElement, {defaultDate: this._point.dateTo, minDate: dateStartElement.value});
     });
   }
 
   setDeleteButtonClickHandler(cb) {
     this._deleteButtonClickHandler = cb;
-    this.getElement().querySelector(`.event__reset-btn`).addEventListener(`click`, cb)
+    this.getElement().querySelector(`.event__reset-btn`).addEventListener(`click`, cb);
   }
+
+  setRollupButtonClickHandler(cb) {
+    this._rollupButtonClickHandler = cb;
+    this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, cb);
+  }
+
 
   recoveryListeners() {
     this.setFormSubmitHandler(this._formSubmitHandler);
@@ -218,20 +238,13 @@ export default class EventEdit extends AbstractSmartComponent {
     this.setTypeChangeHandler(this._typeChangeHandler);
     this.setDestinationChangeHandler(this._destinationChangeHandler);
     this.setDeleteButtonClickHandler(this._deleteButtonClickHandler);
+    this.setRollupButtonClickHandler(this._rollupButtonClickHandler);
     this.setDateStartInputFocusHandler();
     this.setDateEndInputFocusHandler();
   }
 
-  rerender() {
-    super.rerender();
-  }
-
-  updaitPoint(point) {
+  updatePoint(point) {
     this._point = point;
-  }
-
-  reset() {
-    this.rerender();
   }
 
   _applyFlatpickr(dateElement, settings) {
@@ -244,18 +257,38 @@ export default class EventEdit extends AbstractSmartComponent {
       allowInput: true,
       enableTime: true,
       dateFormat: `y/m/d H:i`,
+      onClose: this._dateStartInputChangeHandler,
     };
 
     this._flatpickr = flatpickr(dateElement, Object.assign({}, flatpickrSetting, settings));
   }
 
   removeElement() {
-    if (this._flatpickrStart) {
-      this._flatpickrStart.destroy();
-    }
-    if (this._flatpickrEnd) {
-      this._flatpickrEnd.destroy();
+    if (this._flatpickr) {
+      this._flatpickr.destroy();
     }
     super.removeElement();
+  }
+
+  _getChosenOffers() {
+    const offerTitles = Array.from(this.getElement()
+      .querySelectorAll(`.event__offer-checkbox`))
+      .filter((el) => el.checked)
+      .map((el) => el.dataset.title);
+
+    const offersByType = this._offers.find((el) => el.type === this._point.type).offers;
+    const chosenOffers = offersByType.filter((offer) => {
+      return offerTitles.find((title) => offer.title.toLowerCase() === title);
+    });
+
+    return chosenOffers;
+  }
+
+  getData() {
+    const form = this.getElement();
+    const formData = new FormData(form);
+    const offers = this._getChosenOffers();
+
+    return Object.assign(parseFormData(formData), {offers});
   }
 }

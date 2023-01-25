@@ -4,7 +4,7 @@ const getFilteredPoints = (points, filterType) => {
   let filteredPoints;
   switch (filterType) {
     case Filter.EVERYTHING:
-      filteredPoints = points.slice();
+      filteredPoints = points.slice().sort((a, b) => a.dateFrom - b.dateFrom);
       break;
     case Filter.FUTURE:
       filteredPoints = points.filter((el) => el.dateFrom > new Date());
@@ -51,7 +51,7 @@ export default class Points {
     this._data = [].concat(this._data.slice(0, index), newData, this._data.slice(index + 1));
     this._callHandlers(this._dataChangeHandlers);
 
-    return index;
+    return true;
   }
 
   removeData(id) {

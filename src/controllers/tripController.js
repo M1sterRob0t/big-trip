@@ -35,10 +35,10 @@ const sortPoints = (sortType, array) => {
     case SortType.EVENT:
       break;
     case SortType.PRICE:
-      sortedPoints.sort((a, b) => a.price - b.price);
+      sortedPoints.sort((a, b) => b.price - a.price);
       break;
     case SortType.TIME:
-      sortedPoints.sort((a, b) => (a.dateTo - a.dateFrom) - (b.dateTo - b.dateFrom));
+      sortedPoints.sort((a, b) => (b.dateTo - b.dateFrom) - (a.dateTo - a.dateFrom));
       break;
   }
 
@@ -129,9 +129,14 @@ export default class TripController {
       this._pointsModel.removeData(oldData.id);
       this._updaitEvents();
     } else {
-      const index = this._pointsModel.updateData(oldData.id, newData);
-      if (index) {
-        this._pointControllers[index].render(newData, this._offers, this._destinations);
+      this._pointsModel.updateData(oldData.id, newData);
+      const pointController = this._pointControllers.find((el) => el.isEditMode);
+      pointController.render(newData, this._offers, this._destinations);
+
+      const isSavingMode = pointController.isSavingMode;
+      if (isSavingMode) {
+        this._removeEvents();
+        this.render();
       }
     }
   }
