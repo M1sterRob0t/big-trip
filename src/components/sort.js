@@ -14,9 +14,12 @@ const createTripSortTemplate = () => {
 };
 
 const createSortItemMarkup = (type) => {
+  const isCheckded = (type === SortType.EVENT) ? `checked` : ``;
+
   return (`
     <div class="trip-sort__item  trip-sort__item--${type}">
-      <input id="sort-${type}" class="trip-sort__input  visually-hidden" type="radio" name="trip-sort" value="sort-${type}" data-sort-type=${type}>
+      <input id="sort-${type}" class="trip-sort__input  visually-hidden" type="radio" name="trip-sort"
+        value="sort-${type}" data-sort-type=${type} ${isCheckded}>
       <label class="trip-sort__btn" for="sort-${type}">
         ${capitalizeFirstLetter(type)}
       </label>
@@ -27,7 +30,7 @@ const createSortItemMarkup = (type) => {
 export default class Sort extends AbstractComponent {
   constructor() {
     super();
-    this.currentSortType = SortType.EVENT;
+    this._currentSortType = SortType.EVENT;
   }
 
   getTemplate() {
@@ -39,22 +42,23 @@ export default class Sort extends AbstractComponent {
   }
 
   set sortType(sortType) {
-    this.currentSortType = sortType;
+    this._currentSortType = sortType;
   }
 
   setSortTypeChangeHandler(cb) {
+    this._currentSortType = SortType.EVENT;
     this.getElement().addEventListener(`change`, (evt) => {
       evt.preventDefault();
 
       const sortType = evt.target.dataset.sortType;
 
-      if (this._currentSorttype === sortType) {
+      if (this.sortType === sortType) {
         return;
       }
 
-      this.currentSortType = sortType;
+      this.sortType = sortType;
 
-      cb(this.currentSortType);
+      cb(this.sortType);
     });
   }
 }

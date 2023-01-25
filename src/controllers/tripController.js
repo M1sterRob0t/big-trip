@@ -28,7 +28,7 @@ const renderDays = (container, events, isSorted = false) => {
   }
 };
 
-const sortPoints = (sortType, array) => {
+const getSortedPoints = (sortType, array) => {
   let sortedPoints = array.slice();
 
   switch (sortType) {
@@ -78,40 +78,38 @@ export default class TripController {
     this._offers = this._offersModel.data;
     this._destinations = this._destinatiosModel.data;
 
-    const container = this._coltainer;
-    const points = this._points;
-    const offers = this._offers;
-    const destinations = this._destinations;
-
-    if (points.length === 0) {
+    if (this._points.length === 0) {
       const noEventsComponent = new NoEvents();
-      render(container, noEventsComponent);
+      render(this._coltainer, noEventsComponent);
       return;
     }
 
-    render(container, this._sortComponent);
-    render(container, this._daysComponent);
+    render(this._coltainer, this._sortComponent);
+    render(this._coltainer, this._daysComponent);
     const tripDaysElement = this._daysComponent.getElement();
 
-    renderDays(tripDaysElement, points);
-    const eventsLists = this._daysComponent.getEventsLists();
-    this._renderEventsByDays(eventsLists, points, offers, destinations);
+    const sortType = this._sortComponent.sortType;
+    this._renderBySortType(tripDaysElement, sortType, getSortedPoints(sortType, this._points));
   }
 
-  _sortTypeChangeHandler(sortType) {
-    const sortedPoints = sortPoints(sortType, this._points);
-    this._removeEvents();
-    const tripDaysElement = this._daysComponent.getElement();
-
+  _renderBySortType(container, sortType, sortedPoints) {
     if (sortType === SortType.EVENT) {
-      renderDays(tripDaysElement, this._points);
+      renderDays(container, this._points);
       const eventsLists = this._daysComponent.getEventsLists();
       this._renderEventsByDays(eventsLists, this._points, this._offers, this._destinations);
     } else {
-      renderDays(tripDaysElement, this._points, true);
+      renderDays(container, this._points, true);
       const eventsLists = this._daysComponent.getEventsLists();
       this._renderEventsWithoutDays(eventsLists[0], sortedPoints, this._offers, this._destinations);
     }
+  }
+
+  _sortTypeChangeHandler(sortType) {
+    const sortedPoints = getSortedPoints(sortType, this._points);
+    this._removeEvents();
+
+    const tripDaysElement = this._daysComponent.getElement();
+    this._renderBySortType(tripDaysElement, sortType, sortedPoints);
   }
 
   _dataChangeHandler(oldData, newData) {

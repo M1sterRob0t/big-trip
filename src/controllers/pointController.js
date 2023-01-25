@@ -107,15 +107,15 @@ export default class PointController {
   }
 
   _replaceEditToEvent(isSubmit) {
-    this.isEditMode = false;
-    this.isSavingMode = false;
-
     if (!isSubmit) {
       this._resetChanges();
     }
 
     replace(this._eventComponent, this._eventEditComponent);
     document.removeEventListener(`keydown`, this._onEscKeyDown);
+
+    this.isEditMode = false;
+    this.isSavingMode = false;
   }
 
   _resetChanges() {
@@ -126,7 +126,6 @@ export default class PointController {
   _onEscKeyDown(evt) {
     if (evt.key === `Esc` || evt.key === `Escape`) {
       this._replaceEditToEvent();
-      document.removeEventListener(`keydown`, this._onEscPressHandler);
     }
   }
 }

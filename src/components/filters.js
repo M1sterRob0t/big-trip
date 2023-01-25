@@ -13,10 +13,13 @@ const createTripFiltersTemplate = () => {
 };
 
 const createFilterMarkup = (filterName) => {
+  const isChecked = (filterName === Filter.EVERYTHING) ? `checked` : ``;
+
   return (`
     <div class="trip-filters__filter">
-      <input id="filter-${filterName.toLowerCase()}" class="trip-filters__filter-input  visually-hidden" type="radio" name="trip-filter" value="${filterName.toLowerCase()}">
-      <label class="trip-filters__filter-label" for="filter-${filterName.toLowerCase()}">${filterName}</label>
+      <input id="filter-${filterName}" class="trip-filters__filter-input  visually-hidden"
+        type="radio" name="trip-filter" value="${filterName}" ${isChecked}>
+      <label class="trip-filters__filter-label" for="filter-${filterName}">${filterName}</label>
     </div>
   `);
 };
