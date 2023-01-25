@@ -1,6 +1,6 @@
 import EventEdit from "../components/event-edit";
 import Event from "../components/event";
-import {render, replace, remove} from "../utils/render";
+import {render, RenderPosition, replace, remove} from "../utils/render";
 
 export const Mode = {
   DEFAULT: `default`,
@@ -8,7 +8,16 @@ export const Mode = {
   CREATING: `creating`,
 };
 
-export const EmptyPoint = {};
+export const EmptyPoint = {
+  id: Math.random() * new Date(),
+  price: 0,
+  dateFrom: new Date(),
+  dateTo: new Date(+new Date() + 1000 * 60 * 60 * 24),
+  destination: ``,
+  isFavorite: false,
+  offers: [],
+  type: `bus`,
+};
 
 export default class PointController {
   constructor(container, dataChangeHandler, viewChangeHandler) {
@@ -25,9 +34,11 @@ export default class PointController {
 
     this.isEditMode = false;
     this.isSavingMode = false;
+    this.isCreatingMode = false;
   }
 
-  render(point, offers, destinations) {
+  render(point, offers, destinations, isCreatingMode) {
+    // debugger;
     this._point = point;
 
     const oldEventComponent = this._eventComponent;
@@ -84,7 +95,13 @@ export default class PointController {
       this._replaceEditToEvent();
     });
 
-    render(this._container, this._eventComponent);
+    if (isCreatingMode) {
+      this.isEditMode = true;
+      document.addEventListener(`keydown`, this._onEscKeyDown);
+      render(this._container, this._eventEditComponent, RenderPosition.BEFOREBEGIN);
+    } else {
+      render(this._container, this._eventComponent);
+    }
   }
 
   destroy() {

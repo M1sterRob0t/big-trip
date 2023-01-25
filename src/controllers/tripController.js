@@ -46,23 +46,22 @@ const getSortedPoints = (sortType, array) => {
 };
 
 export default class TripController {
-  constructor(container, pointsModel, offersModel, destinationsModel) {
+  constructor(container, pointsModel, offersModel, destinationsModel, newEventButtonComponent) {
     this._coltainer = container;
     this._pointsModel = pointsModel;
     this._offersModel = offersModel;
     this._destinatiosModel = destinationsModel;
 
+    this._newEventButtonComponent = newEventButtonComponent;
+    this._sortComponent = new Sort();
+    this._daysComponent = new Days();
+
     this._points = null;
     this._offers = null;
     this._destinations = null;
 
-    this._sortComponent = null;
-    this._daysComponent = null;
-
-    this._sortComponent = new Sort();
-    this._daysComponent = new Days();
-
     this._pointControllers = [];
+
     this._sortTypeChangeHandler = this._sortTypeChangeHandler.bind(this);
     this._dataChangeHandler = this._dataChangeHandler.bind(this);
     this._viewChangeHandler = this._viewChangeHandler.bind(this);
@@ -70,7 +69,6 @@ export default class TripController {
 
     this._pointsModel.setFilterChangeHandler(this._filterChangeHandler);
     this._sortComponent.setSortTypeChangeHandler(this._sortTypeChangeHandler);
-
   }
 
   render() {
@@ -86,10 +84,19 @@ export default class TripController {
 
     render(this._coltainer, this._sortComponent);
     render(this._coltainer, this._daysComponent);
-    const tripDaysElement = this._daysComponent.getElement();
 
+    const tripDaysElement = this._daysComponent.getElement();
     const sortType = this._sortComponent.sortType;
+
     this._renderBySortType(tripDaysElement, sortType, getSortedPoints(sortType, this._points));
+  }
+
+  createNewEvent() {
+    this._viewChangeHandler();
+    const tripDaysElement = this._daysComponent.getElement();
+    this._creatingPoint = new PointController(tripDaysElement, this._dataChangeHandler, this._viewChangeHandler);
+    this._creatingPoint.render(EmptyPoint, this._offers, this._destinations, true);
+    this._pointControllers.push(this._creatingPoint);
   }
 
   _renderBySortType(container, sortType, sortedPoints) {
@@ -110,18 +117,17 @@ export default class TripController {
 
     const tripDaysElement = this._daysComponent.getElement();
     this._renderBySortType(tripDaysElement, sortType, sortedPoints);
+    this._newEventButtonComponent.disableModeOff();
   }
 
   _dataChangeHandler(oldData, newData) {
     if (oldData === EmptyPoint) {
-      this._mode = Mode.CREATING;
       if (newData === null) {
-        this._pointControllers[0].destroy();
-        this._removeEvents();
-        this.render();
+        this._pointControllers.at(-1).destroy();
+        this._newEventButtonComponent.disableModeOff();
       } else {
         this._pointsModel.addData(newData);
-        this._pointControllers[0].render(newData, this._offers, this._destinations);
+        this._pointControllers.at(-1).render(newData, this._offers, this._destinations);
       }
     } else if (newData === null) {
       this._pointsModel.removeData(oldData.id);
@@ -135,8 +141,10 @@ export default class TripController {
       if (isSavingMode) {
         this._removeEvents();
         this.render();
+        this._newEventButtonComponent.disableModeOff();
       }
     }
+    console.log(this._points);
   }
 
   _viewChangeHandler() {
@@ -150,6 +158,7 @@ export default class TripController {
     this._sortComponent.setSortTypeChangeHandler(this._sortTypeChangeHandler);
 
     this.render();
+    this._newEventButtonComponent.disableModeOff();
   }
 
   _removeEvents() {

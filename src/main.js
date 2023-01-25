@@ -9,6 +9,7 @@ import Points from "./models/points";
 import Offers from "./models/offers";
 import Destinations from "./models/destinations";
 import FiltersController from "./controllers/filtersController";
+import NewEventButton from "./components/new-event-button";
 
 const EVENTS_NUMBER = 10;
 const pointsModel = new Points();
@@ -21,15 +22,21 @@ destinationsModel.data = destinations;
 
 const tripInfoComponent = new TripInfo(pointsModel.data);
 const tabsComponent = new Tabs();
+const newEventButton = new NewEventButton();
+
 
 const tripMain = document.querySelector(`.trip-main`);
 const tripControlsHeaders = tripMain.querySelectorAll(`.trip-main__trip-controls h2`);
 const tripEvents = document.querySelector(`.trip-events`);
-const tripController = new TripController(tripEvents, pointsModel, offersModel, destinationsModel);
+
+const tripController = new TripController(tripEvents, pointsModel, offersModel, destinationsModel, newEventButton);
+const filtersController = new FiltersController(tripControlsHeaders[1], pointsModel);
+newEventButton.setButtonClickHandler(() => {
+  tripController.createNewEvent();
+});
 
 render(tripMain, tripInfoComponent, RenderPosition.AFTERBEGIN);
 render(tripControlsHeaders[0], tabsComponent, RenderPosition.AFTEREND);
-const filtersController = new FiltersController(tripControlsHeaders[1], pointsModel);
 filtersController.render();
-
+render(tripMain, newEventButton);
 tripController.render();
