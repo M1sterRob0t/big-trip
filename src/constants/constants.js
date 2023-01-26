@@ -37,4 +37,10 @@ const SortType = {
   PRICE: `price`,
 };
 
-export {transferTypes, activityTypes, Preposition, types, cities, monthes, SortType};
+const Filter = {
+  EVERYTHING: `everything`,
+  FUTURE: `future`,
+  PAST: `past`,
+};
+
+export {transferTypes, activityTypes, Preposition, types, cities, monthes, SortType, Filter};

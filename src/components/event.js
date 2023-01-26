@@ -1,6 +1,6 @@
 import {transferTypes, Preposition} from "../constants/constants";
 import {capitalizeFirstLetter} from "../utils/common";
-import AbstractComponent from "./abstract-component";
+import AbstractComponent from "./abstract-smart-component";
 import moment from "moment";
 
 const TIME_FORMAT = `HH:mm`;
@@ -98,6 +98,7 @@ export default class Event extends AbstractComponent {
   constructor(point) {
     super();
     this._point = point;
+    this._rollupButtonClickHandler = null;
   }
 
   getTemplate() {
@@ -105,6 +106,7 @@ export default class Event extends AbstractComponent {
   }
 
   setRollupButtonClickHandler(cb) {
+    this._rollupButtonClickHandler = cb;
     this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, cb);
   }
 }

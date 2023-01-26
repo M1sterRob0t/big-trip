@@ -4,8 +4,8 @@ import {offersByType} from "./offers";
 import {types} from "../constants/constants";
 
 
-let date = new Date();
-const generatePoint = () => {
+let date = new Date() - 1000 * 60 * 60 * 24 * 3;
+const generatePoint = (id) => {
   const price = _.random(5, 150);
   const type = _.sample(types);
   const offers = _.sampleSize(offersByType.find((el) => el.type === type).offers, _.random(0, 5));
@@ -16,6 +16,7 @@ const generatePoint = () => {
   date = dateTo;
 
   return {
+    id,
     price,
     dateFrom,
     dateTo,
@@ -29,7 +30,7 @@ const generatePoint = () => {
 const generatePoints = (amount) => {
   const points = [];
   for (let i = 1; i <= amount; i++) {
-    points.push(generatePoint());
+    points.push(generatePoint(i));
   }
 
   return points;
