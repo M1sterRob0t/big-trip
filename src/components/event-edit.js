@@ -209,7 +209,16 @@ export default class EventEdit extends AbstractSmartComponent {
 
   setDestinationChangeHandler(cb) {
     this._destinationChangeHandler = cb;
-    this.getElement().querySelector(`.event__input--destination`).addEventListener(`change`, cb);
+    const inputDestination = this.getElement().querySelector(`.event__input--destination`);
+
+    inputDestination.addEventListener(`change`, (evt) => {
+      const isValid = this._destinations.find((el) => el.name === evt.target.value);
+      if (isValid) {
+        cb(evt);
+      } else {
+        inputDestination.setCustomValidity(`Please select a valid value.`);
+      }
+    });
   }
 
   setDateStartInputFocusHandler() {
