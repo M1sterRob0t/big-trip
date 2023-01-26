@@ -5,7 +5,8 @@ import Day from "../components/trip-day";
 import NoEvents from "../components/no-events";
 import {SortType} from "../constants/constants";
 import PointController from "./pointController";
-import {Mode, EmptyPoint} from "./pointController";
+import {EmptyPoint} from "./pointController";
+import {HIDING_CLASS} from "../constants/constants";
 
 const renderDays = (container, events, isSorted = false) => {
   if (isSorted) {
@@ -99,6 +100,16 @@ export default class TripController {
     this._pointControllers.push(this._creatingPoint);
   }
 
+  show() {
+    this._sortComponent.setDefaultSortType();
+    this._updaitEvents();
+    this._coltainer.classList.remove(HIDING_CLASS);
+  }
+
+  hide() {
+    this._coltainer.classList.add(HIDING_CLASS);
+  }
+
   _renderBySortType(container, sortType, sortedPoints) {
     if (sortType === SortType.EVENT) {
       renderDays(container, this._points);
@@ -144,7 +155,6 @@ export default class TripController {
         this._newEventButtonComponent.disableModeOff();
       }
     }
-    console.log(this._points);
   }
 
   _viewChangeHandler() {
