@@ -10,6 +10,8 @@ import Offers from "./models/offers";
 import Destinations from "./models/destinations";
 import FiltersController from "./controllers/filtersController";
 import NewEventButton from "./components/new-event-button";
+import {Tab} from "./components/trip-tabs";
+import Stats from "./components/stats";
 
 const EVENTS_NUMBER = 10;
 const pointsModel = new Points();
@@ -22,21 +24,44 @@ destinationsModel.data = destinations;
 
 const tripInfoComponent = new TripInfo(pointsModel.data);
 const tabsComponent = new Tabs();
-const newEventButton = new NewEventButton();
+const newEventButtonComponent = new NewEventButton();
+const statsComponent = new Stats();
 
-
+const container = document.querySelector(`.page-main .page-body__container`);
 const tripMain = document.querySelector(`.trip-main`);
 const tripControlsHeaders = tripMain.querySelectorAll(`.trip-main__trip-controls h2`);
 const tripEvents = document.querySelector(`.trip-events`);
 
-const tripController = new TripController(tripEvents, pointsModel, offersModel, destinationsModel, newEventButton);
+const tripController = new TripController(tripEvents, pointsModel, offersModel, destinationsModel, newEventButtonComponent);
 const filtersController = new FiltersController(tripControlsHeaders[1], pointsModel);
-newEventButton.setButtonClickHandler(() => {
+
+newEventButtonComponent.setButtonClickHandler(() => {
   tripController.createNewEvent();
+});
+
+tabsComponent.setTabClickHandler((evt) => {
+  switch (evt.target.dataset.name) {
+
+    case Tab.TABLE:
+      statsComponent.removeStatistic();
+      statsComponent.hide();
+      tripController.show();
+      newEventButtonComponent.disableModeOff();
+      break;
+
+    case Tab.STATS:
+      newEventButtonComponent.disableModeOn();
+      tripController.hide();
+      statsComponent.show();
+      statsComponent.printStatistic(pointsModel, offersModel, destinationsModel);
+      break;
+
+  }
 });
 
 render(tripMain, tripInfoComponent, RenderPosition.AFTERBEGIN);
 render(tripControlsHeaders[0], tabsComponent, RenderPosition.AFTEREND);
 filtersController.render();
-render(tripMain, newEventButton);
+render(tripMain, newEventButtonComponent);
+render(container, statsComponent);
 tripController.render();

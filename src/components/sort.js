@@ -45,6 +45,13 @@ export default class Sort extends AbstractComponent {
     this._currentSortType = sortType;
   }
 
+  setDefaultSortType() {
+    this._currentSortType = SortType.EVENT;
+    const inputs = Array.from(this.getElement().querySelectorAll(`.trip-sort__input`));
+    const input = inputs.find((el) => el.dataset.sortType === SortType.EVENT);
+    input.checked = true;
+  }
+
   setSortTypeChangeHandler(cb) {
     this._currentSortType = SortType.EVENT;
     this.getElement().addEventListener(`change`, (evt) => {

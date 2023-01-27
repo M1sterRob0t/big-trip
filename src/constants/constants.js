@@ -43,4 +43,6 @@ const Filter = {
   PAST: `past`,
 };
 
-export {transferTypes, activityTypes, Preposition, types, cities, monthes, SortType, Filter};
+const HIDING_CLASS = `visually-hidden`;
+
+export {transferTypes, activityTypes, Preposition, types, cities, monthes, SortType, Filter, HIDING_CLASS};
