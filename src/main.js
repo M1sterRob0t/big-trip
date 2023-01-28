@@ -1,10 +1,7 @@
 import TripInfo from "./components/trip-info";
 import Tabs from "./components/trip-tabs";
-import {generatePoints} from "./mock/points";
 import {render, RenderPosition} from "./utils/render";
 import TripController from "./controllers/tripController";
-import {destinations} from "./mock/destinations";
-import {offersByType} from "./mock/offers";
 import Points from "./models/points";
 import Offers from "./models/offers";
 import Destinations from "./models/destinations";
@@ -12,17 +9,16 @@ import FiltersController from "./controllers/filtersController";
 import NewEventButton from "./components/new-event-button";
 import {Tab} from "./components/trip-tabs";
 import Stats from "./components/stats";
+import API from "./api";
+import Point from "./models/point";
 
-const EVENTS_NUMBER = 10;
+const AUTHORIZATION_TOKEN = `Basic f7v274089v202973yr2037vy23r79yv239ry239rvy239r0y2393v2ry93`;
+const api = new API(AUTHORIZATION_TOKEN);
 const pointsModel = new Points();
 const offersModel = new Offers();
 const destinationsModel = new Destinations();
 
-pointsModel.data = generatePoints(EVENTS_NUMBER);
-offersModel.data = offersByType;
-destinationsModel.data = destinations;
 
-const tripInfoComponent = new TripInfo(pointsModel.data);
 const tabsComponent = new Tabs();
 const newEventButtonComponent = new NewEventButton();
 const statsComponent = new Stats();
@@ -59,9 +55,23 @@ tabsComponent.setTabClickHandler((evt) => {
   }
 });
 
-render(tripMain, tripInfoComponent, RenderPosition.AFTERBEGIN);
+
 render(tripControlsHeaders[0], tabsComponent, RenderPosition.AFTEREND);
 filtersController.render();
 render(tripMain, newEventButtonComponent);
 render(container, statsComponent);
-tripController.render();
+
+
+api.getData()
+  .then((data) => {
+    const [rawPoints, offers, destinations] = data;
+    const points = Point.parsePoints(rawPoints);
+
+    pointsModel.data = points;
+    offersModel.data = offers;
+    destinationsModel.data = destinations;
+
+    const tripInfoComponent = new TripInfo(pointsModel.data);
+    render(tripMain, tripInfoComponent, RenderPosition.AFTERBEGIN);
+    tripController.render();
+  });
