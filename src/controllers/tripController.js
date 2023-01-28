@@ -133,13 +133,21 @@ export default class TripController {
   }
 
   _dataChangeHandler(oldData, newData) {
-    if (oldData === EmptyPoint) {
+    // debugger;
+    if (oldData === null) {
       if (newData === null) {
         this._pointControllers.at(-1).destroy();
         this._newEventButtonComponent.disableModeOff();
       } else {
-        this._pointsModel.addData(newData);
-        this._pointControllers.at(-1).render(newData, this._offers, this._destinations);
+        this._api.createPoint(newData).
+          then((newServerData) => {
+            this._pointsModel.addData(newServerData);
+            this._pointControllers.at(-1).render(newServerData, this._offers, this._destinations);
+
+            this._removeEvents();
+            this.render();
+            this._newEventButtonComponent.disableModeOff();
+          });
       }
     } else if (newData === null) {
       this._pointsModel.removeData(oldData.id);

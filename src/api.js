@@ -1,5 +1,21 @@
 import Point from "./models/point";
 
+const Method = {
+  GET: `GET`,
+  POST: `POST`,
+  PUT: `PUT`,
+  DELETE: `DELETE`,
+};
+
+const checkStatus = (response) => {
+  if (response.status >= 200 && response.status < 300) {
+    return response;
+  } else {
+    throw new Error(`${response.status}: ${response.statusText}`);
+  }
+};
+
+
 export default class API {
   constructor(authorization) {
     this._authorization = authorization;
@@ -29,7 +45,9 @@ export default class API {
     const headers = new Headers();
     headers.append(`Authorization`, this._authorization);
 
-    return fetch(`https://13.ecmascript.pages.academy/big-trip/destinations`, {headers}).then((response) => response.json());
+    return fetch(`https://13.ecmascript.pages.academy/big-trip/destinations`, {headers})
+      .then(checkStatus)
+      .then((response) => response.json());
   }
 
   updatePoint(id, point) {
@@ -39,9 +57,25 @@ export default class API {
 
     return fetch(`https://13.ecmascript.pages.academy/big-trip/points/${id}`, {
       headers,
-      method: `PUT`,
+      method: Method.PUT,
       body: JSON.stringify(Point.dataToRaw(point)),
     })
+      .then(checkStatus)
+      .then((response) => response.json())
+      .then((data) => Point.parsePoint(data));
+  }
+
+  createPoint(point) {
+    const headers = new Headers();
+    headers.append(`Authorization`, this._authorization);
+    headers.append(`Content-type`, `application/json`);
+
+    return fetch(`https://13.ecmascript.pages.academy/big-trip/points`, {
+      headers,
+      method: Method.POST,
+      body: JSON.stringify(Point.dataToRaw(point)),
+    })
+      .then(checkStatus)
       .then((response) => response.json())
       .then((data) => Point.parsePoint(data));
   }

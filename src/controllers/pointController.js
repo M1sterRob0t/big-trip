@@ -9,7 +9,6 @@ export const Mode = {
 };
 
 export const EmptyPoint = {
-  id: Math.random() * new Date(),
   price: 0,
   dateFrom: new Date(),
   dateTo: new Date(+new Date() + 1000 * 60 * 60 * 24),
@@ -49,7 +48,7 @@ export default class PointController {
     }
 
     this._eventComponent = new Event(point);
-    this._eventEditComponent = new EventEdit(point, offers, destinations);
+    this._eventEditComponent = new EventEdit(point, offers, destinations, isCreatingMode);
 
     this._eventComponent.setRollupButtonClickHandler((evt) => {
       evt.preventDefault();
@@ -63,7 +62,7 @@ export default class PointController {
       const formData = this._eventEditComponent.getData();
       const newPoint = Object.assign({}, this._point, formData);
 
-      this._dataChangeHandler(this._point, newPoint);
+      this._dataChangeHandler(null, newPoint);
     });
 
     this._eventEditComponent.setFavoriteCheckboxChangeHandler(() => {

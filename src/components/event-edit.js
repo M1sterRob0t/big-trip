@@ -4,7 +4,6 @@ import AbstractSmartComponent from "./abstract-smart-component";
 import flatpickr from "flatpickr";
 import "flatpickr/dist/flatpickr.min.css";
 import moment from "moment";
-import {EmptyPoint} from "../controllers/pointController";
 
 const DATE_FORMAT = `YY/MM/DD HH:mm`;
 const parseFormData = (formData) => {
@@ -15,8 +14,7 @@ const parseFormData = (formData) => {
   };
 };
 
-const createTripEventEditTemplate = (point, offers, destinations) => {
-  const isCreating = (point === EmptyPoint) ? true : false;
+const createTripEventEditTemplate = (point, offers, destinations, isCreating) => {
   const {type, destination, offers: chosenOffers, price, dateFrom, dateTo, isFavorite} = point;
   const {name: city = ``, description, pictures} = destination;
   const isDestination = destination ? true : false;
@@ -166,12 +164,13 @@ const createEventPhotoMarkup = (src, alt) => {
 };
 
 export default class EventEdit extends AbstractSmartComponent {
-  constructor(point, offers, destinations) {
+  constructor(point, offers, destinations, isCreating = false) {
     super();
 
     this._point = point;
     this._offers = offers;
     this._destinations = destinations;
+    this._isCreating = isCreating;
 
     this._formSubmitHandler = null;
     this._favoriteCheckboxChangeHandler = null;
@@ -190,7 +189,7 @@ export default class EventEdit extends AbstractSmartComponent {
   }
 
   getTemplate() {
-    return createTripEventEditTemplate(this._point, this._offers, this._destinations);
+    return createTripEventEditTemplate(this._point, this._offers, this._destinations, this._isCreating);
   }
 
   setFormSubmitHandler(cb) {
