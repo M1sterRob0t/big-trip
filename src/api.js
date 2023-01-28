@@ -79,4 +79,17 @@ export default class API {
       .then((response) => response.json())
       .then((data) => Point.parsePoint(data));
   }
+
+  deletePoint(point) {
+    const headers = new Headers();
+    headers.append(`Authorization`, this._authorization);
+    headers.append(`Content-type`, `application/json`);
+
+    return fetch(`https://13.ecmascript.pages.academy/big-trip/points/${point.id}`, {
+      headers,
+      method: Method.DELETE,
+      body: JSON.stringify(Point.dataToRaw(point)),
+    })
+      .then(checkStatus);
+  }
 }

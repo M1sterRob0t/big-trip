@@ -98,7 +98,8 @@ export default class TripController {
     const tripDaysElement = this._daysComponent.getElement();
     this._creatingPoint = new PointController(tripDaysElement, this._dataChangeHandler, this._viewChangeHandler);
     this._creatingPoint.render(EmptyPoint, this._offers, this._destinations, true);
-    this._pointControllers.push(this._creatingPoint);
+    // здесь нужна сортировка
+    this._pointControllers.unshift(this._creatingPoint);
   }
 
   show() {
@@ -134,15 +135,16 @@ export default class TripController {
 
   _dataChangeHandler(oldData, newData) {
     // debugger;
-    if (oldData === null) {
+    if (oldData === null || oldData === EmptyPoint) {
       if (newData === null) {
-        this._pointControllers.at(-1).destroy();
+        this._pointControllers.at(0).destroy();
+        this._pointControllers = this._pointControllers.slice(1);
         this._newEventButtonComponent.disableModeOff();
       } else {
         this._api.createPoint(newData).
           then((newServerData) => {
             this._pointsModel.addData(newServerData);
-            this._pointControllers.at(-1).render(newServerData, this._offers, this._destinations);
+            this._pointControllers.at(0).render(newServerData, this._offers, this._destinations);
 
             this._removeEvents();
             this.render();
@@ -150,8 +152,11 @@ export default class TripController {
           });
       }
     } else if (newData === null) {
-      this._pointsModel.removeData(oldData.id);
-      this._updaitEvents();
+      this._api.deletePoint(oldData)
+        .then(() => {
+          this._pointsModel.removeData(oldData.id);
+          this._updaitEvents();
+        });
     } else {
       this._api.updatePoint(oldData.id, newData)
         .then((newServerData) => {
