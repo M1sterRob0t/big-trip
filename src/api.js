@@ -1,7 +1,10 @@
+import Point from "./models/point";
+
 export default class API {
   constructor(authorization) {
     this._authorization = authorization;
   }
+
   getData() {
     return Promise.all([this.getPoints(), this.getOffers(), this.getDestinations()]);
   }
@@ -10,7 +13,9 @@ export default class API {
     const headers = new Headers();
     headers.append(`Authorization`, this._authorization);
 
-    return fetch(`https://13.ecmascript.pages.academy/big-trip/points`, {headers}).then((response) => response.json());
+    return fetch(`https://13.ecmascript.pages.academy/big-trip/points`, {headers})
+      .then((response) => response.json())
+      .then((data) => Point.parsePoints(data));
   }
 
   getOffers() {
@@ -25,5 +30,19 @@ export default class API {
     headers.append(`Authorization`, this._authorization);
 
     return fetch(`https://13.ecmascript.pages.academy/big-trip/destinations`, {headers}).then((response) => response.json());
+  }
+
+  updatePoint(id, point) {
+    const headers = new Headers();
+    headers.append(`Authorization`, this._authorization);
+    headers.append(`Content-type`, `application/json`);
+
+    return fetch(`https://13.ecmascript.pages.academy/big-trip/points/${id}`, {
+      headers,
+      method: `PUT`,
+      body: JSON.stringify(Point.dataToRaw(point)),
+    })
+      .then((response) => response.json())
+      .then((data) => Point.parsePoint(data));
   }
 }

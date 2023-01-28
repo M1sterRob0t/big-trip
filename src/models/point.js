@@ -10,12 +10,29 @@ export default class Point {
     this.type = data[`type`];
   }
 
+  static dataToRaw(data) {
+    return {
+      [`base_price`]: data.price,
+      [`date_from`]: data.dateFrom.toISOString(),
+      [`date_to`]: data.dateTo.toISOString(),
+      [`destination`]: data.destination,
+      [`id`]: data.id,
+      [`is_favorite`]: data.isFavorite,
+      [`offers`]: data.offers,
+      [`type`]: data.type,
+    };
+  }
+
   static parsePoint(data) {
     return new Point(data);
   }
 
   static parsePoints(data) {
     return data.map(Point.parsePoint);
+  }
+
+  static clone(data) {
+    return new Point(data.toRaw());
   }
 }
 

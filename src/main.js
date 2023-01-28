@@ -10,7 +10,6 @@ import NewEventButton from "./components/new-event-button";
 import {Tab} from "./components/trip-tabs";
 import Stats from "./components/stats";
 import API from "./api";
-import Point from "./models/point";
 
 const AUTHORIZATION_TOKEN = `Basic f7v274089v202973yr2037vy23r79yv239ry239rvy239r0y2393v2ry93`;
 const api = new API(AUTHORIZATION_TOKEN);
@@ -28,7 +27,7 @@ const tripMain = document.querySelector(`.trip-main`);
 const tripControlsHeaders = tripMain.querySelectorAll(`.trip-main__trip-controls h2`);
 const tripEvents = document.querySelector(`.trip-events`);
 
-const tripController = new TripController(tripEvents, pointsModel, offersModel, destinationsModel, newEventButtonComponent);
+const tripController = new TripController(tripEvents, pointsModel, offersModel, destinationsModel, api, newEventButtonComponent);
 const filtersController = new FiltersController(tripControlsHeaders[1], pointsModel);
 
 newEventButtonComponent.setButtonClickHandler(() => {
@@ -64,8 +63,7 @@ render(container, statsComponent);
 
 api.getData()
   .then((data) => {
-    const [rawPoints, offers, destinations] = data;
-    const points = Point.parsePoints(rawPoints);
+    const [points, offers, destinations] = data;
 
     pointsModel.data = points;
     offersModel.data = offers;

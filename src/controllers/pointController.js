@@ -38,7 +38,6 @@ export default class PointController {
   }
 
   render(point, offers, destinations, isCreatingMode) {
-    // debugger;
     this._point = point;
 
     const oldEventComponent = this._eventComponent;
@@ -60,7 +59,6 @@ export default class PointController {
 
     this._eventEditComponent.setFormSubmitHandler((evt) => {
       evt.preventDefault();
-
       this.isSavingMode = true;
       const formData = this._eventEditComponent.getData();
       const newPoint = Object.assign({}, this._point, formData);
@@ -71,19 +69,22 @@ export default class PointController {
     this._eventEditComponent.setFavoriteCheckboxChangeHandler(() => {
       const newPoint = Object.assign({}, this._point, {isFavorite: !this._point.isFavorite});
       this._dataChangeHandler(this._point, newPoint);
-      this._eventEditComponent.rerender();
     });
 
     this._eventEditComponent.setTypeChangeHandler((evt) => {
       const newPoint = Object.assign({}, this._point, {type: evt.target.value});
-      this._dataChangeHandler(this._point, newPoint);
+
+      this._point = newPoint;
+      this._eventEditComponent.updatePoint(newPoint);
       this._eventEditComponent.rerender();
     });
 
     this._eventEditComponent.setDestinationChangeHandler((evt) => {
       const newPoint = Object.assign({}, this._point, {
         destination: destinations.find((el) => el.name === evt.target.value)});
-      this._dataChangeHandler(this._point, newPoint);
+
+      this._point = newPoint;
+      this._eventEditComponent.updatePoint(newPoint);
       this._eventEditComponent.rerender();
     });
 
@@ -136,7 +137,8 @@ export default class PointController {
   }
 
   _resetChanges() {
-    this._dataChangeHandler(this._point, this._oldPoint);
+    this._point = Object.assign(this._oldPoint, {isFavorite: this._point.isFavorite});
+    this._eventEditComponent.updatePoint(this._point);
     this._eventEditComponent.rerender();
   }
 

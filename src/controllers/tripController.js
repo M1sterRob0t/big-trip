@@ -47,13 +47,14 @@ const getSortedPoints = (sortType, array) => {
 };
 
 export default class TripController {
-  constructor(container, pointsModel, offersModel, destinationsModel, newEventButtonComponent) {
+  constructor(container, pointsModel, offersModel, destinationsModel, api, newEventButtonComponent) {
     this._coltainer = container;
     this._pointsModel = pointsModel;
     this._offersModel = offersModel;
     this._destinatiosModel = destinationsModel;
-
+    this._api = api;
     this._newEventButtonComponent = newEventButtonComponent;
+
     this._sortComponent = new Sort();
     this._daysComponent = new Days();
 
@@ -144,16 +145,19 @@ export default class TripController {
       this._pointsModel.removeData(oldData.id);
       this._updaitEvents();
     } else {
-      this._pointsModel.updateData(oldData.id, newData);
-      const pointController = this._pointControllers.find((el) => el.isEditMode);
-      pointController.render(newData, this._offers, this._destinations);
+      this._api.updatePoint(oldData.id, newData)
+        .then((newServerData) => {
+          this._pointsModel.updateData(oldData.id, newServerData);
+          const pointController = this._pointControllers.find((el) => el.isEditMode);
+          pointController.render(newServerData, this._offers, this._destinations);
 
-      const isSavingMode = pointController.isSavingMode;
-      if (isSavingMode) {
-        this._removeEvents();
-        this.render();
-        this._newEventButtonComponent.disableModeOff();
-      }
+          const isSavingMode = pointController.isSavingMode;
+          if (isSavingMode) {
+            this._removeEvents();
+            this.render();
+            this._newEventButtonComponent.disableModeOff();
+          }
+        });
     }
   }
 
