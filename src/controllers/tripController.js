@@ -47,13 +47,14 @@ const getSortedPoints = (sortType, array) => {
 };
 
 export default class TripController {
-  constructor(container, pointsModel, offersModel, destinationsModel, newEventButtonComponent) {
+  constructor(container, pointsModel, offersModel, destinationsModel, api, newEventButtonComponent) {
     this._coltainer = container;
     this._pointsModel = pointsModel;
     this._offersModel = offersModel;
     this._destinatiosModel = destinationsModel;
-
+    this._api = api;
     this._newEventButtonComponent = newEventButtonComponent;
+
     this._sortComponent = new Sort();
     this._daysComponent = new Days();
 
@@ -97,7 +98,8 @@ export default class TripController {
     const tripDaysElement = this._daysComponent.getElement();
     this._creatingPoint = new PointController(tripDaysElement, this._dataChangeHandler, this._viewChangeHandler);
     this._creatingPoint.render(EmptyPoint, this._offers, this._destinations, true);
-    this._pointControllers.push(this._creatingPoint);
+    // здесь нужна сортировка
+    this._pointControllers.unshift(this._creatingPoint);
   }
 
   show() {
@@ -132,28 +134,57 @@ export default class TripController {
   }
 
   _dataChangeHandler(oldData, newData) {
-    if (oldData === EmptyPoint) {
+    // debugger;
+    if (oldData === null || oldData === EmptyPoint) {
       if (newData === null) {
-        this._pointControllers.at(-1).destroy();
+        this._pointControllers.at(0).destroy();
+        this._pointControllers = this._pointControllers.slice(1);
         this._newEventButtonComponent.disableModeOff();
       } else {
-        this._pointsModel.addData(newData);
-        this._pointControllers.at(-1).render(newData, this._offers, this._destinations);
+        const pointController = this._pointControllers.at(0).find((el) => el.isEditMode);
+        this._api.createPoint(newData).
+          then((newServerData) => {
+            this._pointsModel.addData(newServerData);
+            pointController.render(newServerData, this._offers, this._destinations);
+
+            this._removeEvents();
+            this.render();
+            this._newEventButtonComponent.disableModeOff();
+          })
+          .catch(() => {
+            pointController.render(newData, this._offers, this._destinations);
+            pointController.addErrorClass();
+          });
       }
     } else if (newData === null) {
-      this._pointsModel.removeData(oldData.id);
-      this._updaitEvents();
-    } else {
-      this._pointsModel.updateData(oldData.id, newData);
       const pointController = this._pointControllers.find((el) => el.isEditMode);
-      pointController.render(newData, this._offers, this._destinations);
+      this._api.deletePoint(oldData)
+        .then(() => {
+          this._pointsModel.removeData(oldData.id);
+          this._updaitEvents();
+        })
+        .catch(() => {
+          pointController.render(newData, this._offers, this._destinations);
+          pointController.addErrorClass();
+        });
+    } else {
+      const pointController = this._pointControllers.find((el) => el.isEditMode);
+      this._api.updatePoint(oldData.id, newData)
+        .then((newServerData) => {
+          this._pointsModel.updateData(oldData.id, newServerData);
+          pointController.render(newServerData, this._offers, this._destinations);
 
-      const isSavingMode = pointController.isSavingMode;
-      if (isSavingMode) {
-        this._removeEvents();
-        this.render();
-        this._newEventButtonComponent.disableModeOff();
-      }
+          const isSavingMode = pointController.isSavingMode;
+          if (isSavingMode) {
+            this._removeEvents();
+            this.render();
+            this._newEventButtonComponent.disableModeOff();
+          }
+        })
+        .catch(() => {
+          pointController.render(newData, this._offers, this._destinations);
+          pointController.addErrorClass();
+        });
     }
   }
 

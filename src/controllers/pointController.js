@@ -2,6 +2,9 @@ import EventEdit from "../components/event-edit";
 import Event from "../components/event";
 import {render, RenderPosition, replace, remove} from "../utils/render";
 
+const SHAKE_ANIMATION_TIMEOUT = 500;
+const ERROR_CLASS_NAME = `error`;
+
 export const Mode = {
   DEFAULT: `default`,
   EDITING: `editing`,
@@ -9,7 +12,6 @@ export const Mode = {
 };
 
 export const EmptyPoint = {
-  id: Math.random() * new Date(),
   price: 0,
   dateFrom: new Date(),
   dateTo: new Date(+new Date() + 1000 * 60 * 60 * 24),
@@ -38,7 +40,6 @@ export default class PointController {
   }
 
   render(point, offers, destinations, isCreatingMode) {
-    // debugger;
     this._point = point;
 
     const oldEventComponent = this._eventComponent;
@@ -50,7 +51,7 @@ export default class PointController {
     }
 
     this._eventComponent = new Event(point);
-    this._eventEditComponent = new EventEdit(point, offers, destinations);
+    this._eventEditComponent = new EventEdit(point, offers, destinations, isCreatingMode);
 
     this._eventComponent.setRollupButtonClickHandler((evt) => {
       evt.preventDefault();
@@ -59,40 +60,77 @@ export default class PointController {
     });
 
     this._eventEditComponent.setFormSubmitHandler((evt) => {
+      console.log(this._point);
       evt.preventDefault();
-
       this.isSavingMode = true;
       const formData = this._eventEditComponent.getData();
-      const newPoint = Object.assign({}, this._point, formData);
+      this._eventEditComponent.setData({buttonTextSave: `Saving...`, isBlockForm: true});
 
-      this._dataChangeHandler(this._point, newPoint);
+      const newPoint = Object.assign({}, this._point, formData);
+      const oldPoint = isCreatingMode ? null : this._point;
+      console.log(newPoint);
+      this._dataChangeHandler(oldPoint, newPoint);
     });
 
     this._eventEditComponent.setFavoriteCheckboxChangeHandler(() => {
       const newPoint = Object.assign({}, this._point, {isFavorite: !this._point.isFavorite});
       this._dataChangeHandler(this._point, newPoint);
-      this._eventEditComponent.rerender();
     });
 
     this._eventEditComponent.setTypeChangeHandler((evt) => {
       const newPoint = Object.assign({}, this._point, {type: evt.target.value});
-      this._dataChangeHandler(this._point, newPoint);
+
+      this._point = newPoint;
+      this._eventEditComponent.updatePoint(newPoint);
       this._eventEditComponent.rerender();
     });
 
     this._eventEditComponent.setDestinationChangeHandler((evt) => {
       const newPoint = Object.assign({}, this._point, {
-        destination: destinations.find((el) => el.name === evt.target.value)});
-      this._dataChangeHandler(this._point, newPoint);
+        destination: destinations.find((el) => el.name === evt.target.value)
+      });
+
+      this._point = newPoint;
+      this._eventEditComponent.updatePoint(newPoint);
       this._eventEditComponent.rerender();
     });
 
     this._eventEditComponent.setDeleteButtonClickHandler(() => {
+      this._eventEditComponent.setData({buttonTextDelete: `Deleting...`, isBlockForm: true});
       this._dataChangeHandler(this._point, null);
     });
 
     this._eventEditComponent.setRollupButtonClickHandler(() => {
       this._replaceEditToEvent();
+    });
+
+    this._eventEditComponent.setPriceInputChangeHandler((evt) => {
+      const newPoint = Object.assign({}, this._point, {price: evt.target.value});
+
+      this._point = newPoint;
+      this._eventEditComponent.updatePoint(newPoint);
+      this._eventEditComponent.rerender();
+    });
+
+    this._eventEditComponent.setDateStartInputChangeHandler((dateFrom) => {
+      console.log(this._point);
+      console.log(dateFrom);
+      const newPoint = Object.assign({}, this._point, {dateFrom});
+      this._point = newPoint;
+      this._eventEditComponent.updatePoint(newPoint);
+      console.log(this._point);
+    });
+
+    this._eventEditComponent.setDateEndInputChangeHandler((dateTo) => {
+      const newPoint = Object.assign({}, this._point, {dateTo});
+      this._point = newPoint;
+      this._eventEditComponent.updatePoint(newPoint);
+    });
+
+    this._eventEditComponent.setOffersChangeHandler((chosenOffers) => {
+      const newPoint = Object.assign({}, this._point, {offers: chosenOffers});
+      this._point = newPoint;
+      this._eventEditComponent.updatePoint(newPoint);
     });
 
     if (isCreatingMode) {
@@ -136,7 +174,8 @@ export default class PointController {
   }
 
   _resetChanges() {
-    this._dataChangeHandler(this._point, this._oldPoint);
+    this._point = Object.assign(this._oldPoint, {isFavorite: this._point.isFavorite});
+    this._eventEditComponent.updatePoint(this._point);
     this._eventEditComponent.rerender();
   }
 
@@ -144,6 +183,19 @@ export default class PointController {
     if (evt.key === `Esc` || evt.key === `Escape`) {
       this._replaceEditToEvent();
     }
+  }
+
+  addErrorClass() {
+    this._eventEditComponent.setData();
+    this._eventEditComponent.getElement().style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / 1000}s`;
+    this._eventEditComponent.getElement().classList.add(ERROR_CLASS_NAME);
+    setTimeout(() => {
+      this._eventEditComponent.getElement().style.animation = ``;
+    }, SHAKE_ANIMATION_TIMEOUT);
+  }
+
+  removeErrorClass() {
+    this._eventEditComponent.getElement().classList.remove(ERROR_CLASS_NAME);
   }
 }
 

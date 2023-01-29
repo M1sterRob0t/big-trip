@@ -51,12 +51,24 @@ const createTitleMarkup = (route) => {
 };
 
 export default class TripInfo extends AbstractComponent {
-  constructor(points) {
+  constructor(pointsModel) {
     super();
-    this._points = points;
+    this._pointsModel = pointsModel;
+    this._points = this._pointsModel.data;
   }
 
   getTemplate() {
     return createTripInfoTemplate(this._points);
+  }
+
+  rerender() {
+    this._points = this._pointsModel.data;
+    const oldElement = this.getElement();
+    const parent = oldElement.parentElement;
+
+    this.removeElement();
+    const newElement = this.getElement();
+
+    parent.replaceChild(newElement, oldElement);
   }
 }
