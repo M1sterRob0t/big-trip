@@ -151,7 +151,10 @@ export default class TripController {
             this.render();
             this._newEventButtonComponent.disableModeOff();
           })
-          .catch(() => pointController.addErrorClass());
+          .catch(() => {
+            pointController.render(newData, this._offers, this._destinations);
+            pointController.addErrorClass();
+          });
       }
     } else if (newData === null) {
       const pointController = this._pointControllers.find((el) => el.isEditMode);
@@ -160,7 +163,10 @@ export default class TripController {
           this._pointsModel.removeData(oldData.id);
           this._updaitEvents();
         })
-        .catch(() => pointController.addErrorClass());
+        .catch(() => {
+          pointController.render(newData, this._offers, this._destinations);
+          pointController.addErrorClass();
+        });
     } else {
       const pointController = this._pointControllers.find((el) => el.isEditMode);
       this._api.updatePoint(oldData.id, newData)

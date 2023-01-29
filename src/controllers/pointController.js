@@ -60,6 +60,7 @@ export default class PointController {
     });
 
     this._eventEditComponent.setFormSubmitHandler((evt) => {
+      console.log(this._point);
       evt.preventDefault();
       this.isSavingMode = true;
       const formData = this._eventEditComponent.getData();
@@ -67,6 +68,7 @@ export default class PointController {
 
       const newPoint = Object.assign({}, this._point, formData);
       const oldPoint = isCreatingMode ? null : this._point;
+      console.log(newPoint);
       this._dataChangeHandler(oldPoint, newPoint);
     });
 
@@ -85,7 +87,8 @@ export default class PointController {
 
     this._eventEditComponent.setDestinationChangeHandler((evt) => {
       const newPoint = Object.assign({}, this._point, {
-        destination: destinations.find((el) => el.name === evt.target.value)});
+        destination: destinations.find((el) => el.name === evt.target.value)
+      });
 
       this._point = newPoint;
       this._eventEditComponent.updatePoint(newPoint);
@@ -99,6 +102,35 @@ export default class PointController {
 
     this._eventEditComponent.setRollupButtonClickHandler(() => {
       this._replaceEditToEvent();
+    });
+
+    this._eventEditComponent.setPriceInputChangeHandler((evt) => {
+      const newPoint = Object.assign({}, this._point, {price: evt.target.value});
+
+      this._point = newPoint;
+      this._eventEditComponent.updatePoint(newPoint);
+      this._eventEditComponent.rerender();
+    });
+
+    this._eventEditComponent.setDateStartInputChangeHandler((dateFrom) => {
+      console.log(this._point);
+      console.log(dateFrom);
+      const newPoint = Object.assign({}, this._point, {dateFrom});
+      this._point = newPoint;
+      this._eventEditComponent.updatePoint(newPoint);
+      console.log(this._point);
+    });
+
+    this._eventEditComponent.setDateEndInputChangeHandler((dateTo) => {
+      const newPoint = Object.assign({}, this._point, {dateTo});
+      this._point = newPoint;
+      this._eventEditComponent.updatePoint(newPoint);
+    });
+
+    this._eventEditComponent.setOffersChangeHandler((chosenOffers) => {
+      const newPoint = Object.assign({}, this._point, {offers: chosenOffers});
+      this._point = newPoint;
+      this._eventEditComponent.updatePoint(newPoint);
     });
 
     if (isCreatingMode) {

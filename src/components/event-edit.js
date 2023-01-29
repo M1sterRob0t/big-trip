@@ -188,8 +188,8 @@ export default class EventEdit extends AbstractSmartComponent {
     this._rollupButtonClickHandler = null;
     this._priceInputChangeHandler = null;
     this._dateStartInputChangeHandler = null;
-    this._offersCheckboxChangeHandler = null;
-
+    this._dateEndInputChangeHandler = null;
+    this._offersChangeHandler = null;
     this._flatpickr = null;
 
     this.setDateStartInputFocusHandler();
@@ -255,6 +255,37 @@ export default class EventEdit extends AbstractSmartComponent {
     this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, cb);
   }
 
+  setPriceInputChangeHandler(cb) {
+    this._priceInputChangeHandler = cb;
+    this.getElement().querySelector(`.event__input--price`).addEventListener(`change`, cb);
+  }
+
+  setDateStartInputChangeHandler(cb) {
+    this._dateStartInputChangeHandler = cb;
+    this.getElement().querySelector(`#event-start-time-1`).addEventListener(`change`, (evt) => {
+      const dateFrom = new Date(moment(evt.target.value, DATE_FORMAT));
+      cb(dateFrom);
+    });
+  }
+
+  setDateEndInputChangeHandler(cb) {
+    this._dateEndInputChangeHandler = cb;
+    this.getElement().querySelector(`#event-end-time-1`).addEventListener(`change`, (evt) => {
+      const dateTo = new Date(moment(evt.target.value, DATE_FORMAT));
+      cb(dateTo);
+    });
+  }
+
+  setOffersChangeHandler(cb) {
+    this._offersChangeHandler = cb;
+    this.getElement().querySelectorAll(`.event__offer-checkbox`).forEach((offer) => {
+      offer.addEventListener(`change`, () => {
+        const offers = this._getChosenOffers();
+        cb(offers);
+      });
+    });
+  }
+
   recoveryListeners() {
     this.setFormSubmitHandler(this._formSubmitHandler);
     this.setFavoriteCheckboxChangeHandler(this._favoriteCheckboxChangeHandler);
@@ -262,6 +293,10 @@ export default class EventEdit extends AbstractSmartComponent {
     this.setDestinationChangeHandler(this._destinationChangeHandler);
     this.setDeleteButtonClickHandler(this._deleteButtonClickHandler);
     this.setRollupButtonClickHandler(this._rollupButtonClickHandler);
+    this.setPriceInputChangeHandler(this._priceInputChangeHandler);
+    this.setDateStartInputChangeHandler(this._dateStartInputChangeHandler);
+    this.setDateEndInputChangeHandler(this._dateEndInputChangeHandler);
+    this.setOffersChangeHandler(this._offersChangeHandler);
     this.setDateStartInputFocusHandler();
     this.setDateEndInputFocusHandler();
   }
@@ -280,7 +315,6 @@ export default class EventEdit extends AbstractSmartComponent {
       // allowInput: true,
       enableTime: true,
       dateFormat: `y/m/d H:i`,
-      onClose: this._dateStartInputChangeHandler,
     };
 
     this._flatpickr = flatpickr(dateElement, Object.assign({}, flatpickrSetting, settings));
@@ -298,7 +332,6 @@ export default class EventEdit extends AbstractSmartComponent {
       .querySelectorAll(`.event__offer-checkbox`))
       .filter((el) => el.checked)
       .map((el) => el.dataset.title);
-
     const offersByType = this._offers.find((el) => el.type === this._point.type).offers;
     const chosenOffers = offersByType.filter((offer) => {
       return offerTitles.find((title) => offer.title.toLowerCase() === title);
