@@ -1,6 +1,6 @@
 import TripInfo from "./components/trip-info";
 import Tabs from "./components/trip-tabs";
-import {render, RenderPosition} from "./utils/render";
+import {render, RenderPosition, remove} from "./utils/render";
 import TripController from "./controllers/tripController";
 import Points from "./models/points";
 import Offers from "./models/offers";
@@ -10,17 +10,20 @@ import NewEventButton from "./components/new-event-button";
 import {Tab} from "./components/trip-tabs";
 import Stats from "./components/stats";
 import API from "./api";
+import Loading from "./components/loading";
 
 const AUTHORIZATION_TOKEN = `Basic f7v274089v202973yr2037vy23r79yv239ry239rvy239r0y2393v2ry93`;
 const api = new API(AUTHORIZATION_TOKEN);
+
 const pointsModel = new Points();
 const offersModel = new Offers();
 const destinationsModel = new Destinations();
 
-
 const tabsComponent = new Tabs();
 const newEventButtonComponent = new NewEventButton();
+const tripInfoComponent = new TripInfo(pointsModel);
 const statsComponent = new Stats();
+const loadingComponent = new Loading();
 
 const container = document.querySelector(`.page-main .page-body__container`);
 const tripMain = document.querySelector(`.trip-main`);
@@ -54,12 +57,12 @@ tabsComponent.setTabClickHandler((evt) => {
   }
 });
 
-
 render(tripControlsHeaders[0], tabsComponent, RenderPosition.AFTEREND);
+render(tripMain, tripInfoComponent, RenderPosition.AFTERBEGIN);
 filtersController.render();
 render(tripMain, newEventButtonComponent);
 render(container, statsComponent);
-
+render(container, loadingComponent);
 
 api.getData()
   .then((data) => {
@@ -69,7 +72,14 @@ api.getData()
     offersModel.data = offers;
     destinationsModel.data = destinations;
 
-    const tripInfoComponent = new TripInfo(pointsModel.data);
-    render(tripMain, tripInfoComponent, RenderPosition.AFTERBEGIN);
+
+    remove(loadingComponent);
+    tripInfoComponent.rerender();
     tripController.render();
+    newEventButtonComponent.disableModeOff();
+  })
+  .catch(() => {
+    remove(loadingComponent);
+    tripController.render();
+    newEventButtonComponent.disableModeOff();
   });

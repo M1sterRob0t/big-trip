@@ -29,7 +29,7 @@ export default class API {
     const headers = new Headers();
     headers.append(`Authorization`, this._authorization);
 
-    return fetch(`https://13.ecmascript.pages.academy/big-trip/points`, {headers})
+    return fetch(`https://13.ecmascript.pages.academy/big-trip/pointss`, {headers})
       .then((response) => response.json())
       .then((data) => Point.parsePoints(data));
   }
