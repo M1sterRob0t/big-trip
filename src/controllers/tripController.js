@@ -141,27 +141,31 @@ export default class TripController {
         this._pointControllers = this._pointControllers.slice(1);
         this._newEventButtonComponent.disableModeOff();
       } else {
+        const pointController = this._pointControllers.at(0).find((el) => el.isEditMode);
         this._api.createPoint(newData).
           then((newServerData) => {
             this._pointsModel.addData(newServerData);
-            this._pointControllers.at(0).render(newServerData, this._offers, this._destinations);
+            pointController.render(newServerData, this._offers, this._destinations);
 
             this._removeEvents();
             this.render();
             this._newEventButtonComponent.disableModeOff();
-          });
+          })
+          .catch(() => pointController.addErrorClass());
       }
     } else if (newData === null) {
+      const pointController = this._pointControllers.find((el) => el.isEditMode);
       this._api.deletePoint(oldData)
         .then(() => {
           this._pointsModel.removeData(oldData.id);
           this._updaitEvents();
-        });
+        })
+        .catch(() => pointController.addErrorClass());
     } else {
+      const pointController = this._pointControllers.find((el) => el.isEditMode);
       this._api.updatePoint(oldData.id, newData)
         .then((newServerData) => {
           this._pointsModel.updateData(oldData.id, newServerData);
-          const pointController = this._pointControllers.find((el) => el.isEditMode);
           pointController.render(newServerData, this._offers, this._destinations);
 
           const isSavingMode = pointController.isSavingMode;
@@ -170,6 +174,10 @@ export default class TripController {
             this.render();
             this._newEventButtonComponent.disableModeOff();
           }
+        })
+        .catch(() => {
+          pointController.render(newData, this._offers, this._destinations);
+          pointController.addErrorClass();
         });
     }
   }

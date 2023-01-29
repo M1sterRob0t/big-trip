@@ -6,6 +6,12 @@ import "flatpickr/dist/flatpickr.min.css";
 import moment from "moment";
 
 const DATE_FORMAT = `YY/MM/DD HH:mm`;
+const defaultData = {
+  buttonTextDelete: `Delete`,
+  buttonTextSave: `Save`,
+  isBlockForm: false,
+};
+
 const parseFormData = (formData) => {
   return {
     price: Number(formData.get(`event-price`)),
@@ -14,21 +20,22 @@ const parseFormData = (formData) => {
   };
 };
 
-const createTripEventEditTemplate = (point, offers, destinations, isCreating) => {
+const createTripEventEditTemplate = (point, offers, destinations, isCreating, externalData) => {
   const {type, destination, offers: chosenOffers, price, dateFrom, dateTo, isFavorite} = point;
   const {name: city = ``, description, pictures} = destination;
   const isDestination = destination ? true : false;
 
-
   const allOffers = offers.find((el) => el.type === type).offers;
   const cities = destinations.map((el) => el.name);
   const preposition = activityTypes.includes(type) ? Preposition.IN : Preposition.TO;
-
   const dateStartFormatted = moment(dateFrom).format(DATE_FORMAT);
   const dateEndFormatted = moment(dateTo).format(DATE_FORMAT);
+  const saveButtonText = externalData.buttonTextSave;
+  const deleteButtonText = externalData.buttonTextDelete;
+  const isBlockForm = externalData.isBlockForm;
 
   return (`
-    <form class="trip-events__item  event  event--edit" action="#" method="post">
+    <form class="trip-events__item  event  event--edit" action="#" method="post" ${isBlockForm ? `disabled` : ``}>
       <header class="event__header">
         <div class="event__type-wrapper">
           <label class="event__type  event__type-btn" for="event-type-toggle-1">
@@ -78,13 +85,13 @@ const createTripEventEditTemplate = (point, offers, destinations, isCreating) =>
             <span class="visually-hidden">Price</span>
             &euro;
           </label>
-          <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value="${price}">
+          <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value="${price}" min="0">
         </div>
 
-        <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
+        <button class="event__save-btn  btn  btn--blue" type="submit" ${isBlockForm ? `disabled` : ``}>${saveButtonText}</button>
         ${isCreating ? `
-          <button class="event__reset-btn" type="reset">Cancel</button>` : `
-          <button class="event__reset-btn" type="reset">Delete</button>
+          <button class="event__reset-btn" type="reset" ${isBlockForm ? `disabled` : ``}>Cancel</button>` : `
+          <button class="event__reset-btn" type="reset" ${isBlockForm ? `disabled` : ``}>${deleteButtonText}</button>
         `}
 
         <input id="event-favorite-1" class="event__favorite-checkbox  visually-hidden"
@@ -171,6 +178,7 @@ export default class EventEdit extends AbstractSmartComponent {
     this._offers = offers;
     this._destinations = destinations;
     this._isCreating = isCreating;
+    this._externalData = defaultData;
 
     this._formSubmitHandler = null;
     this._favoriteCheckboxChangeHandler = null;
@@ -189,7 +197,7 @@ export default class EventEdit extends AbstractSmartComponent {
   }
 
   getTemplate() {
-    return createTripEventEditTemplate(this._point, this._offers, this._destinations, this._isCreating);
+    return createTripEventEditTemplate(this._point, this._offers, this._destinations, this._isCreating, this._externalData);
   }
 
   setFormSubmitHandler(cb) {
@@ -305,5 +313,10 @@ export default class EventEdit extends AbstractSmartComponent {
     const offers = this._getChosenOffers();
 
     return Object.assign(parseFormData(formData), {offers});
+  }
+
+  setData(data = defaultData) {
+    this._externalData = Object.assign({}, defaultData, data);
+    this.rerender();
   }
 }

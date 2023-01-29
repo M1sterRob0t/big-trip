@@ -2,6 +2,9 @@ import EventEdit from "../components/event-edit";
 import Event from "../components/event";
 import {render, RenderPosition, replace, remove} from "../utils/render";
 
+const SHAKE_ANIMATION_TIMEOUT = 500;
+const ERROR_CLASS_NAME = `error`;
+
 export const Mode = {
   DEFAULT: `default`,
   EDITING: `editing`,
@@ -60,9 +63,11 @@ export default class PointController {
       evt.preventDefault();
       this.isSavingMode = true;
       const formData = this._eventEditComponent.getData();
-      const newPoint = Object.assign({}, this._point, formData);
+      this._eventEditComponent.setData({buttonTextSave: `Saving...`, isBlockForm: true});
 
-      this._dataChangeHandler(null, newPoint);
+      const newPoint = Object.assign({}, this._point, formData);
+      const oldPoint = isCreatingMode ? null : this._point;
+      this._dataChangeHandler(oldPoint, newPoint);
     });
 
     this._eventEditComponent.setFavoriteCheckboxChangeHandler(() => {
@@ -88,6 +93,7 @@ export default class PointController {
     });
 
     this._eventEditComponent.setDeleteButtonClickHandler(() => {
+      this._eventEditComponent.setData({buttonTextDelete: `Deleting...`, isBlockForm: true});
       this._dataChangeHandler(this._point, null);
     });
 
@@ -145,6 +151,19 @@ export default class PointController {
     if (evt.key === `Esc` || evt.key === `Escape`) {
       this._replaceEditToEvent();
     }
+  }
+
+  addErrorClass() {
+    this._eventEditComponent.setData();
+    this._eventEditComponent.getElement().style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / 1000}s`;
+    this._eventEditComponent.getElement().classList.add(ERROR_CLASS_NAME);
+    setTimeout(() => {
+      this._eventEditComponent.getElement().style.animation = ``;
+    }, SHAKE_ANIMATION_TIMEOUT);
+  }
+
+  removeErrorClass() {
+    this._eventEditComponent.getElement().classList.remove(ERROR_CLASS_NAME);
   }
 }
 
