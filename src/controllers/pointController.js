@@ -12,7 +12,7 @@ export const Mode = {
 };
 
 export const EmptyPoint = {
-  price: 0,
+  price: 100,
   dateFrom: new Date(),
   dateTo: new Date(+new Date() + 1000 * 60 * 60 * 24),
   destination: ``,
@@ -39,8 +39,9 @@ export default class PointController {
     this.isCreatingMode = false;
   }
 
-  render(point, offers, destinations, isCreatingMode) {
+  render(point, offers, destinations, isCreatingMode = false) {
     this._point = point;
+    this.isCreatingMode = isCreatingMode;
 
     const oldEventComponent = this._eventComponent;
     const oldEventFormComponent = this._eventEditComponent;
@@ -176,6 +177,13 @@ export default class PointController {
 
   _onEscKeyDown(evt) {
     if (evt.key === `Esc` || evt.key === `Escape`) {
+
+      if (this.isCreatingMode) {
+        this._eventEditComponent.setData({buttonTextDelete: `Deleting...`, isBlockForm: true});
+        this._dataChangeHandler(this._point, null);
+        return;
+      }
+
       this._replaceEditToEvent();
     }
   }

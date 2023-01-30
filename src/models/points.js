@@ -27,6 +27,10 @@ export default class Points {
     this._activeFilter = Filter.EVERYTHING;
   }
 
+  get dataAll() {
+    return this._data;
+  }
+
   get data() {
     return getFilteredPoints(this._data, this._activeFilter);
   }
