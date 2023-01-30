@@ -5,8 +5,6 @@ export default class FiltersController {
   constructor(container, pointsModel) {
     this._container = container;
     this._pointsModel = pointsModel;
-
-    // this._activeFilter = null;
   }
 
   render() {
@@ -21,6 +19,5 @@ export default class FiltersController {
 
   _filterChangeHandler(filterType) {
     this._pointsModel.activeFilter = filterType;
-    // this._activeFilter = filterType;
   }
 }

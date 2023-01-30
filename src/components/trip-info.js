@@ -51,10 +51,9 @@ const createTitleMarkup = (route) => {
 };
 
 export default class TripInfo extends AbstractComponent {
-  constructor(pointsModel) {
+  constructor(points) {
     super();
-    this._pointsModel = pointsModel;
-    this._points = this._pointsModel.data;
+    this._points = points;
   }
 
   getTemplate() {
@@ -62,7 +61,6 @@ export default class TripInfo extends AbstractComponent {
   }
 
   rerender() {
-    this._points = this._pointsModel.data;
     const oldElement = this.getElement();
     const parent = oldElement.parentElement;
 
@@ -70,5 +68,9 @@ export default class TripInfo extends AbstractComponent {
     const newElement = this.getElement();
 
     parent.replaceChild(newElement, oldElement);
+  }
+
+  updatePoints(points) {
+    this._points = points;
   }
 }

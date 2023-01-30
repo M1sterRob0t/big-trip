@@ -98,7 +98,6 @@ export default class TripController {
     const tripDaysElement = this._daysComponent.getElement();
     this._creatingPoint = new PointController(tripDaysElement, this._dataChangeHandler, this._viewChangeHandler);
     this._creatingPoint.render(EmptyPoint, this._offers, this._destinations, true);
-    // здесь нужна сортировка
     this._pointControllers.push(this._creatingPoint);
   }
 

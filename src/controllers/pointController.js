@@ -60,7 +60,6 @@ export default class PointController {
     });
 
     this._eventEditComponent.setFormSubmitHandler((evt) => {
-      console.log(this._point);
       evt.preventDefault();
       this.isSavingMode = true;
       const formData = this._eventEditComponent.getData();
@@ -68,7 +67,6 @@ export default class PointController {
 
       const newPoint = Object.assign({}, this._point, formData);
       const oldPoint = isCreatingMode ? null : this._point;
-      console.log(newPoint);
       this._dataChangeHandler(oldPoint, newPoint);
     });
 
