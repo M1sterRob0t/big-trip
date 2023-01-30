@@ -34,6 +34,7 @@ const filtersController = new FiltersController(tripControlsHeaders[1], pointsMo
 const tripInfoController = new TripInfoController(tripMain, pointsModel);
 
 newEventButtonComponent.setButtonClickHandler(() => {
+  filtersController.setDefaultView();
   tripController.createNewEvent();
 });
 

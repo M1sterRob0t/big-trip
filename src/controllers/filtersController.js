@@ -25,6 +25,11 @@ export default class FiltersController {
     render(this._container, this._filtersComponent, RenderPosition.AFTEREND);
   }
 
+  setDefaultView() {
+    this._filterChangeHandler(DEFAULT_FILTER_TYPE);
+    this._dataChangeHandler();
+  }
+
   _filterChangeHandler(filterType) {
     this._pointsModel.activeFilter = filterType;
     this._currentFilter = filterType;
