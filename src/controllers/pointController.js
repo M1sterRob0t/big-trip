@@ -113,12 +113,9 @@ export default class PointController {
     });
 
     this._eventEditComponent.setDateStartInputChangeHandler((dateFrom) => {
-      console.log(this._point);
-      console.log(dateFrom);
       const newPoint = Object.assign({}, this._point, {dateFrom});
       this._point = newPoint;
       this._eventEditComponent.updatePoint(newPoint);
-      console.log(this._point);
     });
 
     this._eventEditComponent.setDateEndInputChangeHandler((dateTo) => {

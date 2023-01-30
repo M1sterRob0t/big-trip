@@ -99,7 +99,7 @@ export default class TripController {
     this._creatingPoint = new PointController(tripDaysElement, this._dataChangeHandler, this._viewChangeHandler);
     this._creatingPoint.render(EmptyPoint, this._offers, this._destinations, true);
     // здесь нужна сортировка
-    this._pointControllers.unshift(this._creatingPoint);
+    this._pointControllers.push(this._creatingPoint);
   }
 
   show() {
@@ -137,11 +137,11 @@ export default class TripController {
     // debugger;
     if (oldData === null || oldData === EmptyPoint) {
       if (newData === null) {
-        this._pointControllers.at(0).destroy();
+        this._pointControllers.at(-1).destroy();
         this._pointControllers = this._pointControllers.slice(1);
         this._newEventButtonComponent.disableModeOff();
       } else {
-        const pointController = this._pointControllers.at(0).find((el) => el.isEditMode);
+        const pointController = this._pointControllers.at(-1);
         this._api.createPoint(newData).
           then((newServerData) => {
             this._pointsModel.addData(newServerData);
