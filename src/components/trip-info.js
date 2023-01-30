@@ -1,9 +1,13 @@
 import {monthes} from "../constants/constants";
 import AbstractComponent from "./abstract-component";
 
+const getTotalPrice = (points) => {
+  return points.reduce((totalPrice, point) => totalPrice + point.price + point.offers.reduce((offersPrice, offer) => offersPrice + offer.price, 0), 0);
+};
+
 
 const createTripInfoTemplate = (points) => {
-  const price = points.length > 0 ? points.reduce((acc, cur) => acc + cur.price, 0) : 0;
+  const price = points.length > 0 ? getTotalPrice(points) : 0;
   const route = points.length > 0 ? points.map((point) => point.destination.name) : null;
   const monthStart = points.length > 0 ? points.at(0).dateFrom.getMonth() : null;
   const dayStart = points.length > 0 ? points.at(0).dateFrom.getDate() : null;
