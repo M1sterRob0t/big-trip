@@ -31,14 +31,22 @@ export default class API {
 
     return fetch(`https://13.ecmascript.pages.academy/big-trip/points`, {headers})
       .then((response) => response.json())
-      .then((data) => Point.parsePoints(data));
+      .then((data) => Point.parsePoints(data))
+      .catch((err) => {
+        throw err;
+      });
   }
 
   getOffers() {
     const headers = new Headers();
     headers.append(`Authorization`, this._authorization);
 
-    return fetch(`https://13.ecmascript.pages.academy/big-trip/offers`, {headers}).then((response) => response.json());
+    return fetch(`https://13.ecmascript.pages.academy/big-trip/offers`, {headers})
+    .then(checkStatus)
+    .then((response) => response.json())
+    .catch((err) => {
+      throw err;
+    });
   }
 
   getDestinations() {
@@ -47,7 +55,10 @@ export default class API {
 
     return fetch(`https://13.ecmascript.pages.academy/big-trip/destinations`, {headers})
       .then(checkStatus)
-      .then((response) => response.json());
+      .then((response) => response.json())
+      .catch((err) => {
+        throw err;
+      });
   }
 
   updatePoint(id, point) {
@@ -62,7 +73,10 @@ export default class API {
     })
       .then(checkStatus)
       .then((response) => response.json())
-      .then((data) => Point.parsePoint(data));
+      .then((data) => Point.parsePoint(data))
+      .catch((err) => {
+        throw err;
+      });
   }
 
   createPoint(point) {
@@ -77,7 +91,10 @@ export default class API {
     })
       .then(checkStatus)
       .then((response) => response.json())
-      .then((data) => Point.parsePoint(data));
+      .then((data) => Point.parsePoint(data))
+      .catch((err) => {
+        throw err;
+      });
   }
 
   deletePoint(point) {
@@ -90,6 +107,9 @@ export default class API {
       method: Method.DELETE,
       body: JSON.stringify(Point.dataToRaw(point)),
     })
-      .then(checkStatus);
+      .then(checkStatus)
+      .catch((err) => {
+        throw err;
+      });
   }
 }

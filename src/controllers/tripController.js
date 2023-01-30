@@ -34,6 +34,7 @@ const getSortedPoints = (sortType, array) => {
 
   switch (sortType) {
     case SortType.EVENT:
+      sortedPoints.sort((a, b) => a.dateFrom - b.dateFrom);
       break;
     case SortType.PRICE:
       sortedPoints.sort((a, b) => b.price - a.price);
@@ -57,6 +58,7 @@ export default class TripController {
 
     this._sortComponent = new Sort();
     this._daysComponent = new Days();
+    this._noEventsComponent = new NoEvents();
 
     this._points = null;
     this._offers = null;
@@ -79,8 +81,9 @@ export default class TripController {
     this._destinations = this._destinatiosModel.data;
 
     if (this._points.length === 0) {
-      const noEventsComponent = new NoEvents();
-      render(this._coltainer, noEventsComponent);
+      remove(this._sortComponent);
+      this._noEventsComponent = new NoEvents();
+      render(this._coltainer, this._noEventsComponent);
       return;
     }
 
@@ -95,11 +98,11 @@ export default class TripController {
 
   createNewEvent() {
     this._viewChangeHandler();
+    remove(this._noEventsComponent);
     const tripDaysElement = this._daysComponent.getElement();
     this._creatingPoint = new PointController(tripDaysElement, this._dataChangeHandler, this._viewChangeHandler);
     this._creatingPoint.render(EmptyPoint, this._offers, this._destinations, true);
-    // здесь нужна сортировка
-    this._pointControllers.unshift(this._creatingPoint);
+    this._pointControllers.push(this._creatingPoint);
   }
 
   show() {
@@ -134,14 +137,13 @@ export default class TripController {
   }
 
   _dataChangeHandler(oldData, newData) {
-    // debugger;
     if (oldData === null || oldData === EmptyPoint) {
       if (newData === null) {
-        this._pointControllers.at(0).destroy();
-        this._pointControllers = this._pointControllers.slice(1);
+        this._pointControllers.at(-1).destroy();
+        this._pointControllers = this._pointControllers.slice(0, -1);
         this._newEventButtonComponent.disableModeOff();
       } else {
-        const pointController = this._pointControllers.at(0).find((el) => el.isEditMode);
+        const pointController = this._pointControllers.at(-1);
         this._api.createPoint(newData).
           then((newServerData) => {
             this._pointsModel.addData(newServerData);
@@ -196,6 +198,7 @@ export default class TripController {
     this._removeEvents();
 
     remove(this._sortComponent);
+    remove(this._noEventsComponent);
     this._sortComponent.setSortTypeChangeHandler(this._sortTypeChangeHandler);
 
     this.render();

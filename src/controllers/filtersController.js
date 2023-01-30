@@ -1,4 +1,5 @@
 import Filters from "../components/filters";
+import {DEFAULT_FILTER_TYPE} from "../constants/constants";
 import {render, RenderPosition} from "../utils/render";
 
 export default class FiltersController {
@@ -6,21 +7,37 @@ export default class FiltersController {
     this._container = container;
     this._pointsModel = pointsModel;
 
-    // this._activeFilter = null;
+    this._points = null;
+    this._filtersComponent = null;
+    this._currentFilter = DEFAULT_FILTER_TYPE;
+
+    this._pointsModel.setDataChangeHandler(this._dataChangeHandler.bind(this));
   }
 
   render() {
-    const filtersComponent = new Filters();
+    this._points = this._pointsModel.data;
+    this._filtersComponent = new Filters(this._points);
 
-    filtersComponent.setFilterChanngeHandler((evt) => {
+    this._filtersComponent.setFilterChanngeHandler((evt) => {
       this._filterChangeHandler(evt.target.value);
     });
 
-    render(this._container, filtersComponent, RenderPosition.AFTEREND);
+    render(this._container, this._filtersComponent, RenderPosition.AFTEREND);
+  }
+
+  setDefaultView() {
+    this._filterChangeHandler(DEFAULT_FILTER_TYPE);
+    this._dataChangeHandler();
   }
 
   _filterChangeHandler(filterType) {
     this._pointsModel.activeFilter = filterType;
-    // this._activeFilter = filterType;
+    this._currentFilter = filterType;
+  }
+
+  _dataChangeHandler() {
+    this._points = this._pointsModel.dataAll;
+    this._filtersComponent.updateData(this._points, this._currentFilter);
+    this._filtersComponent.rerender();
   }
 }

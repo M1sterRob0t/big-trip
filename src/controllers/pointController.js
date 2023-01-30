@@ -12,7 +12,7 @@ export const Mode = {
 };
 
 export const EmptyPoint = {
-  price: 0,
+  price: 100,
   dateFrom: new Date(),
   dateTo: new Date(+new Date() + 1000 * 60 * 60 * 24),
   destination: ``,
@@ -39,8 +39,9 @@ export default class PointController {
     this.isCreatingMode = false;
   }
 
-  render(point, offers, destinations, isCreatingMode) {
+  render(point, offers, destinations, isCreatingMode = false) {
     this._point = point;
+    this.isCreatingMode = isCreatingMode;
 
     const oldEventComponent = this._eventComponent;
     const oldEventFormComponent = this._eventEditComponent;
@@ -60,7 +61,6 @@ export default class PointController {
     });
 
     this._eventEditComponent.setFormSubmitHandler((evt) => {
-      console.log(this._point);
       evt.preventDefault();
       this.isSavingMode = true;
       const formData = this._eventEditComponent.getData();
@@ -68,7 +68,6 @@ export default class PointController {
 
       const newPoint = Object.assign({}, this._point, formData);
       const oldPoint = isCreatingMode ? null : this._point;
-      console.log(newPoint);
       this._dataChangeHandler(oldPoint, newPoint);
     });
 
@@ -113,12 +112,9 @@ export default class PointController {
     });
 
     this._eventEditComponent.setDateStartInputChangeHandler((dateFrom) => {
-      console.log(this._point);
-      console.log(dateFrom);
       const newPoint = Object.assign({}, this._point, {dateFrom});
       this._point = newPoint;
       this._eventEditComponent.updatePoint(newPoint);
-      console.log(this._point);
     });
 
     this._eventEditComponent.setDateEndInputChangeHandler((dateTo) => {
@@ -181,6 +177,13 @@ export default class PointController {
 
   _onEscKeyDown(evt) {
     if (evt.key === `Esc` || evt.key === `Escape`) {
+
+      if (this.isCreatingMode) {
+        this._eventEditComponent.setData({buttonTextDelete: `Deleting...`, isBlockForm: true});
+        this._dataChangeHandler(this._point, null);
+        return;
+      }
+
       this._replaceEditToEvent();
     }
   }

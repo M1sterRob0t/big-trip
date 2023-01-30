@@ -1,9 +1,13 @@
 import {monthes} from "../constants/constants";
 import AbstractComponent from "./abstract-component";
 
+const getTotalPrice = (points) => {
+  return points.reduce((totalPrice, point) => totalPrice + point.price + point.offers.reduce((offersPrice, offer) => offersPrice + offer.price, 0), 0);
+};
+
 
 const createTripInfoTemplate = (points) => {
-  const price = points.length > 0 ? points.reduce((acc, cur) => acc + cur.price, 0) : 0;
+  const price = points.length > 0 ? getTotalPrice(points) : 0;
   const route = points.length > 0 ? points.map((point) => point.destination.name) : null;
   const monthStart = points.length > 0 ? points.at(0).dateFrom.getMonth() : null;
   const dayStart = points.length > 0 ? points.at(0).dateFrom.getDate() : null;
@@ -51,10 +55,9 @@ const createTitleMarkup = (route) => {
 };
 
 export default class TripInfo extends AbstractComponent {
-  constructor(pointsModel) {
+  constructor(points) {
     super();
-    this._pointsModel = pointsModel;
-    this._points = this._pointsModel.data;
+    this._points = points;
   }
 
   getTemplate() {
@@ -62,7 +65,6 @@ export default class TripInfo extends AbstractComponent {
   }
 
   rerender() {
-    this._points = this._pointsModel.data;
     const oldElement = this.getElement();
     const parent = oldElement.parentElement;
 
@@ -70,5 +72,9 @@ export default class TripInfo extends AbstractComponent {
     const newElement = this.getElement();
 
     parent.replaceChild(newElement, oldElement);
+  }
+
+  updatePoints(points) {
+    this._points = points;
   }
 }
