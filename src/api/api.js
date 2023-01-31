@@ -1,4 +1,4 @@
-import Point from "./models/point";
+import Point from "../models/point";
 
 const Method = {
   GET: `GET`,
@@ -108,6 +108,23 @@ export default class API {
       body: JSON.stringify(Point.dataToRaw(point)),
     })
       .then(checkStatus)
+      .catch((err) => {
+        throw err;
+      });
+  }
+
+  sync(points) {
+    const headers = new Headers();
+    headers.append(`Authorization`, this._authorization);
+    headers.append(`Content-type`, `application/json`);
+
+    return fetch(`https://13.ecmascript.pages.academy/big-trip/points/sync`, {
+      headers,
+      method: Method.POST,
+      body: JSON.stringify(points),
+    })
+      .then(checkStatus)
+      .then((response) => response.json())
       .catch((err) => {
         throw err;
       });

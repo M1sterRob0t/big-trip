@@ -48,12 +48,12 @@ const getSortedPoints = (sortType, array) => {
 };
 
 export default class TripController {
-  constructor(container, pointsModel, offersModel, destinationsModel, api, newEventButtonComponent) {
+  constructor(container, pointsModel, offersModel, destinationsModel, provider, newEventButtonComponent) {
     this._coltainer = container;
     this._pointsModel = pointsModel;
     this._offersModel = offersModel;
     this._destinatiosModel = destinationsModel;
-    this._api = api;
+    this._provider = provider;
     this._newEventButtonComponent = newEventButtonComponent;
 
     this._sortComponent = new Sort();
@@ -144,7 +144,7 @@ export default class TripController {
         this._newEventButtonComponent.disableModeOff();
       } else {
         const pointController = this._pointControllers.at(-1);
-        this._api.createPoint(newData).
+        this._provider.createPoint(newData).
           then((newServerData) => {
             this._pointsModel.addData(newServerData);
             pointController.render(newServerData, this._offers, this._destinations);
@@ -160,7 +160,7 @@ export default class TripController {
       }
     } else if (newData === null) {
       const pointController = this._pointControllers.find((el) => el.isEditMode);
-      this._api.deletePoint(oldData)
+      this._provider.deletePoint(oldData)
         .then(() => {
           this._pointsModel.removeData(oldData.id);
           this._updaitEvents();
@@ -171,7 +171,7 @@ export default class TripController {
         });
     } else {
       const pointController = this._pointControllers.find((el) => el.isEditMode);
-      this._api.updatePoint(oldData.id, newData)
+      this._provider.updatePoint(oldData.id, newData)
         .then((newServerData) => {
           this._pointsModel.updateData(oldData.id, newServerData);
           pointController.render(newServerData, this._offers, this._destinations);
