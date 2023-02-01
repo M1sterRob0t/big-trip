@@ -1,6 +1,7 @@
 import EventEdit from "../components/event-edit";
 import Event from "../components/event";
 import {render, RenderPosition, replace, remove} from "../utils/render";
+import {nanoid} from 'nanoid';
 
 const SHAKE_ANIMATION_TIMEOUT = 500;
 const ERROR_CLASS_NAME = `error`;
@@ -12,6 +13,7 @@ export const Mode = {
 };
 
 export const EmptyPoint = {
+  id: nanoid(),
   price: 100,
   dateFrom: new Date(),
   dateTo: new Date(+new Date() + 1000 * 60 * 60 * 24),
@@ -72,8 +74,8 @@ export default class PointController {
     });
 
     this._eventEditComponent.setFavoriteCheckboxChangeHandler(() => {
-      const newPoint = Object.assign({}, this._point, {isFavorite: !this._point.isFavorite});
-      this._dataChangeHandler(this._point, newPoint);
+      const newPoint = Object.assign({}, this._oldPoint, {isFavorite: !this._point.isFavorite});
+      this._dataChangeHandler(this._oldPoint, newPoint);
     });
 
     this._eventEditComponent.setTypeChangeHandler((evt) => {
@@ -108,7 +110,6 @@ export default class PointController {
 
       this._point = newPoint;
       this._eventEditComponent.updatePoint(newPoint);
-      this._eventEditComponent.rerender();
     });
 
     this._eventEditComponent.setDateStartInputChangeHandler((dateFrom) => {

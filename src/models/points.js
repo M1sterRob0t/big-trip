@@ -1,4 +1,4 @@
-import {Filter} from "../constants/constants";
+import {Filter} from "../utils/constants";
 
 const getFilteredPoints = (points, filterType) => {
   let filteredPoints;

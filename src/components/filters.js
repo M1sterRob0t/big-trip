@@ -1,5 +1,5 @@
 import AbstractSmartComponent from "./abstract-smart-component";
-import {Filter, DEFAULT_FILTER_TYPE} from "../constants/constants";
+import {Filter, DEFAULT_FILTER_TYPE} from "../utils/constants";
 
 const createTripFiltersTemplate = (points, currentFilter) => {
   const filters = Object.values(Filter);
@@ -57,5 +57,17 @@ export default class Filters extends AbstractSmartComponent {
   updateData(points, currentFilter) {
     this._points = points;
     this._currentFilter = currentFilter;
+  }
+
+  disableFilters() {
+    this._element.querySelectorAll(`.trip-filters__filter-input`).forEach((filter) => {
+      filter.disabled = true;
+    });
+  }
+
+  enableFilters() {
+    this._element.querySelectorAll(`.trip-filters__filter-input`).forEach((filter) => {
+      filter.disabled = false;
+    });
   }
 }

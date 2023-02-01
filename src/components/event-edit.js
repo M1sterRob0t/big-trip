@@ -1,4 +1,4 @@
-import {transferTypes, activityTypes, Preposition} from "../constants/constants";
+import {transferTypes, activityTypes, Preposition} from "../utils/constants";
 import {capitalizeFirstLetter} from "../utils/common";
 import AbstractSmartComponent from "./abstract-smart-component";
 import flatpickr from "flatpickr";

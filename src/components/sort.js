@@ -1,6 +1,6 @@
 import AbstractComponent from "./abstract-component";
 import {capitalizeFirstLetter} from "../utils/common";
-import {SortType} from "../constants/constants";
+import {SortType} from "../utils/constants";
 
 const createTripSortTemplate = () => {
   const sortTypes = Object.values(SortType);
