@@ -117,11 +117,11 @@ export default class TripController {
 
   _renderBySortType(container, sortType, sortedPoints) {
     if (sortType === SortType.EVENT) {
-      renderDays(container, this._points);
+      renderDays(container, sortedPoints);
       const eventsLists = this._daysComponent.getEventsLists();
-      this._renderEventsByDays(eventsLists, this._points, this._offers, this._destinations);
+      this._renderEventsByDays(eventsLists, sortedPoints, this._offers, this._destinations);
     } else {
-      renderDays(container, this._points, true);
+      renderDays(container, sortedPoints, true);
       const eventsLists = this._daysComponent.getEventsLists();
       this._renderEventsWithoutDays(eventsLists[0], sortedPoints, this._offers, this._destinations);
     }
