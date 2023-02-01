@@ -159,6 +159,7 @@ export default class Stats extends AbstractComponent {
       },
       options: {
         indexAxis: `y`,
+        minBarLength: 50,
         plugins: {
           datalabels: {
             font: {
@@ -214,7 +215,6 @@ export default class Stats extends AbstractComponent {
             border: {
               display: false,
             },
-            minBarLength: 50
           },
         }
       }
@@ -233,6 +233,7 @@ export default class Stats extends AbstractComponent {
         }]
       },
       options: {
+        minBarLength: 50,
         indexAxis: `y`,
         plugins: {
           datalabels: {
@@ -289,7 +290,6 @@ export default class Stats extends AbstractComponent {
             border: {
               display: false,
             },
-            minBarLength: 50
           },
         }
       }
@@ -309,6 +309,7 @@ export default class Stats extends AbstractComponent {
       },
       options: {
         indexAxis: `y`,
+        minBarLength: 50,
         plugins: {
           datalabels: {
             font: {
@@ -364,7 +365,6 @@ export default class Stats extends AbstractComponent {
             border: {
               display: false,
             },
-            minBarLength: 50
           },
         }
       }

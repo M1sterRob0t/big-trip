@@ -74,8 +74,8 @@ export default class PointController {
     });
 
     this._eventEditComponent.setFavoriteCheckboxChangeHandler(() => {
-      const newPoint = Object.assign({}, this._point, {isFavorite: !this._point.isFavorite});
-      this._dataChangeHandler(this._point, newPoint);
+      const newPoint = Object.assign({}, this._oldPoint, {isFavorite: !this._point.isFavorite});
+      this._dataChangeHandler(this._oldPoint, newPoint);
     });
 
     this._eventEditComponent.setTypeChangeHandler((evt) => {
@@ -110,7 +110,6 @@ export default class PointController {
 
       this._point = newPoint;
       this._eventEditComponent.updatePoint(newPoint);
-      this._eventEditComponent.rerender();
     });
 
     this._eventEditComponent.setDateStartInputChangeHandler((dateFrom) => {

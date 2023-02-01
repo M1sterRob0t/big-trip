@@ -13,6 +13,7 @@ import Loading from "./components/loading";
 import TripInfoController from "./controllers/tripInfoController";
 import Provider from "./api/provider";
 import Storage from "./api/storage";
+import {filter} from "lodash";
 
 const AUTHORIZATION_TOKEN = `Basic f7v274089v202973yr2037vy23r79yv239ry239rvy239r0y2393v2ry933`;
 const STORE_PREFIX = `bigtrip-localstorage`;
@@ -59,9 +60,11 @@ tabsComponent.setTabClickHandler((evt) => {
       statsComponent.hide();
       tripController.show();
       newEventButtonComponent.disableModeOff();
+      filtersController.enableFilters();
       break;
 
     case Tab.STATS:
+      filtersController.disableFilters();
       newEventButtonComponent.disableModeOn();
       tripController.hide();
       statsComponent.show();
@@ -104,7 +107,5 @@ window.addEventListener(`offline`, () => {
 });
 
 window.addEventListener(`load`, () => {
-  navigator.serviceWorker.register(`./sw.js`)
-    .then(() => console.log(`Service worker registered.`))
-    .catch(() => console.log(`Service worker registration failed.`));
+  navigator.serviceWorker.register(`./sw.js`);
 });

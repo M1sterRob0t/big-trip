@@ -58,4 +58,16 @@ export default class Filters extends AbstractSmartComponent {
     this._points = points;
     this._currentFilter = currentFilter;
   }
+
+  disableFilters() {
+    this._element.querySelectorAll(`.trip-filters__filter-input`).forEach((filter) => {
+      filter.disabled = true;
+    });
+  }
+
+  enableFilters() {
+    this._element.querySelectorAll(`.trip-filters__filter-input`).forEach((filter) => {
+      filter.disabled = false;
+    });
+  }
 }

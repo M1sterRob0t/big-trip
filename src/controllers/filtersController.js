@@ -30,6 +30,15 @@ export default class FiltersController {
     this._dataChangeHandler();
   }
 
+  disableFilters() {
+    this.setDefaultView();
+    this._filtersComponent.disableFilters();
+  }
+
+  enableFilters() {
+    this._filtersComponent.enableFilters();
+  }
+
   _filterChangeHandler(filterType) {
     this._pointsModel.activeFilter = filterType;
     this._currentFilter = filterType;
