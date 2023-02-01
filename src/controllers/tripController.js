@@ -3,10 +3,10 @@ import Sort from "../components/sort";
 import Days from "../components/trip-days";
 import Day from "../components/trip-day";
 import NoEvents from "../components/no-events";
-import {SortType} from "../constants/constants";
+import {SortType} from "../utils/constants";
 import PointController from "./pointController";
 import {EmptyPoint} from "./pointController";
-import {HIDING_CLASS} from "../constants/constants";
+import {HIDING_CLASS} from "../utils/constants";
 
 const renderDays = (container, events, isSorted = false) => {
   if (isSorted) {

@@ -1,5 +1,5 @@
 import Filters from "../components/filters";
-import {DEFAULT_FILTER_TYPE} from "../constants/constants";
+import {DEFAULT_FILTER_TYPE} from "../utils/constants";
 import {render, RenderPosition} from "../utils/render";
 
 export default class FiltersController {

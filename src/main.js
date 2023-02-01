@@ -13,7 +13,6 @@ import Loading from "./components/loading";
 import TripInfoController from "./controllers/tripInfoController";
 import Provider from "./api/provider";
 import Storage from "./api/storage";
-import {filter} from "lodash";
 
 const AUTHORIZATION_TOKEN = `Basic f7v274089v202973yr2037vy23r79yv239ry239rvy239r0y2393v2ry933`;
 const STORE_PREFIX = `bigtrip-localstorage`;

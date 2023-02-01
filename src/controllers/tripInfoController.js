@@ -13,13 +13,13 @@ export default class TripInfoController {
   }
 
   render() {
-    this._points = this._pointsModel.dataAll;
+    this._points = this._pointsModel.dataAll.slice().sort((a, b) => a.dateFrom - b.dateFrom);
     this._tripInfoComponent = new TripInfo(this._points);
     render(this._container, this._tripInfoComponent, RenderPosition.AFTERBEGIN);
   }
 
   _dataChangeHandler() {
-    this._points = this._pointsModel.dataAll;
+    this._points = this._pointsModel.dataAll.slice().sort((a, b) => a.dateFrom - b.dateFrom);
     this._tripInfoComponent.updatePoints(this._points);
     this._tripInfoComponent.rerender();
   }

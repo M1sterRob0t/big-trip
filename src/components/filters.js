@@ -1,5 +1,5 @@
 import AbstractSmartComponent from "./abstract-smart-component";
-import {Filter, DEFAULT_FILTER_TYPE} from "../constants/constants";
+import {Filter, DEFAULT_FILTER_TYPE} from "../utils/constants";
 
 const createTripFiltersTemplate = (points, currentFilter) => {
   const filters = Object.values(Filter);

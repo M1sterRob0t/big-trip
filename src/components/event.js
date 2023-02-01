@@ -1,4 +1,4 @@
-import {transferTypes, Preposition} from "../constants/constants";
+import {transferTypes, Preposition} from "../utils/constants";
 import {capitalizeFirstLetter} from "../utils/common";
 import AbstractComponent from "./abstract-smart-component";
 import moment from "moment";

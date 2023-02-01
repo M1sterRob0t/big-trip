@@ -1,4 +1,4 @@
-import {monthes} from "../constants/constants";
+import {monthes} from "../utils/constants";
 import AbstractComponent from "./abstract-component";
 
 const createTripDayTemplate = (date, counter) => {
