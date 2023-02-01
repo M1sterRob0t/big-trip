@@ -1,8 +1,25 @@
-const transferTypes = [`taxi`, `bus`, `train`, `ship`, `transport`, `drive`, `flight`];
-const activityTypes = [`check-in`, `sightseeing`, `restaurant`];
-const Preposition = {TO: `to`, IN: `in`};
-const types = [`taxi`, `bus`, `train`, `ship`, `transport`, `drive`, `flight`, `check-in`, `sightseeing`, `restaurant`];
-const cities = [`Moscow`, `Berlin`, `Amsterdam`, `Geneva`, `Chamonix`, `Saint Petersburg`, `Vienna`, `Nurnberg`, `Budapest`, `Bratislava`, `Paris`];
+export const transferLabeledTypes = [
+  [`taxi`, `🚕 TAXI`],
+  [`bus`, `🚌 BUS`],
+  [`train`, `🚂 TRAIN`],
+  [`ship`, `⚓ SHIP`],
+  [`transport`, `🚆 TRANSPORT`],
+  [`drive`, `🚗 DRIVE`],
+  [`flight`, `✈ FLIGHT`],
+];
+export const activityLabeledTypes = [
+  [`check-in`, `🏨 CHECK-IN`],
+  [`sightseeing`, `🏛 SIGHTSEEING`],
+  [`restaurant`, `🍔 RESTAURANT`],
+];
+
+export const labeledTypes = transferLabeledTypes.concat(activityLabeledTypes);
+export const transferTypes = transferLabeledTypes.map((el) => el[0]);
+export const activityTypes = activityLabeledTypes.map((el) => el[0]);
+export const types = labeledTypes.map((el) => el[0]);
+export const Preposition = {TO: `to`, IN: `in`};
+
+
 const Month = {
   JANUARY: `Jan`,
   FEBRUARY: `Feb`,
@@ -46,4 +63,4 @@ const Filter = {
 const DEFAULT_FILTER_TYPE = Filter.EVERYTHING;
 const HIDING_CLASS = `visually-hidden`;
 
-export {transferTypes, activityTypes, Preposition, types, cities, monthes, SortType, Filter, HIDING_CLASS, DEFAULT_FILTER_TYPE};
+export {monthes, SortType, Filter, HIDING_CLASS, DEFAULT_FILTER_TYPE};

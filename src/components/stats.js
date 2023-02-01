@@ -1,26 +1,7 @@
 import AbstractComponent from "./abstract-component";
 import {Chart, registerables} from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
-
-
-const transferLabledTypes = [
-  [`taxi`, `🚕 TAXI`],
-  [`bus`, `🚌 BUS`],
-  [`train`, `🚂 TRAIN`],
-  [`ship`, `⚓ SHIP`],
-  [`transport`, `🚆 TRANSPORT`],
-  [`drive`, `🚗 DRIVE`],
-  [`flight`, `✈ FLIGHT`],
-];
-const activityLabledTypes = [
-  [`check-in`, `🏨 CHECK-IN`],
-  [`sightseeing`, `🏛 SIGHTSEEING`],
-  [`restaurant`, `🍔 RESTAURANT`],
-];
-
-const labledTypes = transferLabledTypes.concat(activityLabledTypes);
-const transferTypes = transferLabledTypes.map((el) => el[0]);
-const types = labledTypes.map((el) => el[0]);
+import {types, labeledTypes, transferTypes} from "../utils/constants";
 
 const getMoneyByType = (points) => {
   return types
@@ -36,9 +17,9 @@ const getMoneyByType = (points) => {
       };
     })
     .map((el) => {
-      const labledType = labledTypes.find((type) => type[0] === el.type);
+      const labeledType = labeledTypes.find((type) => type[0] === el.type);
       return {
-        type: labledType[1],
+        type: labeledType[1],
         money: el.money
       };
     })
@@ -61,9 +42,9 @@ const getHoursByType = (points) => {
       };
     })
     .map((el) => {
-      const labledType = labledTypes.find((type) => type[0] === el.type);
+      const labeledType = labeledTypes.find((type) => type[0] === el.type);
       return {
-        type: labledType[1],
+        type: labeledType[1],
         hours: el.hours
       };
     })
@@ -86,9 +67,9 @@ const getTimesByType = (points) => {
       };
     })
     .map((el) => {
-      const labledType = labledTypes.find((type) => type[0] === el.type);
+      const labeledType = labeledTypes.find((type) => type[0] === el.type);
       return {
-        type: labledType[1],
+        type: labeledType[1],
         times: el.times
       };
     })
